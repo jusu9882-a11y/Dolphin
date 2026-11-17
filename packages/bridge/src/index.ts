@@ -8,6 +8,15 @@ export interface DeviceInfo {
   batteryLevel: number;
 }
 
+export type DeviceSensor = "accelerometer" | "gyroscope" | "magnetometer" | "light" | "proximity";
+export interface SensorReading {
+  sensor: string;
+  type: string;
+  values: number[];
+  accuracy: number;
+  timestampNanos: number;
+}
+
 type RpcResult<T> =
   | { id: string; result: T }
   | { id: string; error: { code: string; message: string } };
@@ -70,7 +79,12 @@ export const Dolphin = {
         return Promise.reject(new RangeError("durationMs must be between 0 and 10000"));
       return rpc<void>("device.vibrate", { durationMs });
     },
-    getInfo(): Promise<DeviceInfo> { return rpc<DeviceInfo>("device.getInfo"); }
+    getInfo(): Promise<DeviceInfo> { return rpc<DeviceInfo>("device.getInfo"); },
+    getSensorData(sensor: DeviceSensor): Promise<SensorReading> {
+      const supported: DeviceSensor[] = ["accelerometer", "gyroscope", "magnetometer", "light", "proximity"];
+      if (!supported.includes(sensor)) return Promise.reject(new RangeError("Unsupported sensor"));
+      return rpc<SensorReading>("device.getSensorData", { sensor });
+    }
   },
   ui: {
     showToast(message: string): Promise<void> {
