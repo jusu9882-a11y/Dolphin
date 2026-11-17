@@ -70,5 +70,5 @@ Microsoft Store's Windows capability declarations must match the Windows impleme
 - New projects start with no camera or microphone permissions declared.
 - `dolphin config capability camera enable|disable` and `dolphin config capability microphone enable|disable` opt those permissions into or out of the generated Android manifest and update `dolphin.config.json`.
 - The Android shell mediates WebView camera/microphone requests with trusted-origin checks, disclosure, and Android runtime permission checks.
-- One-shot sensor APIs are implemented for accelerometer, gyroscope, magnetometer, light and proximity sensors; unavailable hardware and sensor timeouts return errors.
-- Continuous sensor streams, generalized permission revocation handling, privacy policy templates, and real-device verification remain release work.
+- One-shot sensor APIs and continuous `watchSensor` subscriptions are implemented for accelerometer, gyroscope, magnetometer, light and proximity sensors; unavailable hardware and sensor timeouts return errors. Streams support explicit stop callbacks and are stopped when the Android activity leaves the foreground.
+- Generalized permission revocation handling, privacy policy templates, and real-device verification remain release work. Sensor streams currently stop on backgrounding; applications must subscribe again after returning to the foreground.
