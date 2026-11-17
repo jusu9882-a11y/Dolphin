@@ -166,6 +166,11 @@ class MainActivity : Activity() {
         isTrustedOrigin(uri) &&
             (uri.host != "appassets.androidplatform.net" || uri.path?.startsWith("/assets/") == true)
 
+    override fun onPause() {
+        if (::bridge.isInitialized) bridge.pauseSensors()
+        super.onPause()
+    }
+
     override fun onDestroy() {
         clearPendingPermission(deny = true)
         if (::bridge.isInitialized) bridge.close()
