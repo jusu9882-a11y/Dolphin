@@ -94,20 +94,20 @@ jobs:
           mkdir -p /tmp/dolphin-device-test
           cd /tmp/dolphin-device-test
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init DolphinDeviceTest --package-id com.dolphin.devicetest
-          cd DolphinDeviceTest
+          cd DolphinVoiceRecorder
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability camera enable
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability microphone enable
           cd ..
       - name: Build app web assets
         run: |
-          cd /tmp/dolphin-device-test/DolphinDeviceTest
+          cd /tmp/dolphin-device-test/DolphinVoiceRecorder
           pnpm install
           pnpm run build
           mkdir -p android/app/src/main/assets/www
           cp -R dist/. android/app/src/main/assets/www/
       - name: Build installable Android APK
         run: gradle -p /tmp/dolphin-device-test/DolphinDeviceTest/android assembleDebug
-      - name: Upload device-test APK
+      - name: Upload voice-recorder APK
         uses: actions/upload-artifact@v4
         with:
           name: dolphin-android-device-test
