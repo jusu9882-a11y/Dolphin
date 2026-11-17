@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+dist/
+dist-apk/
+build/
+.gradle/
+.idea/
+*.iml
+local.properties
+.env
+.env.*
+!.env.example
