@@ -2,6 +2,10 @@ package com.dolphin.app
 
 import android.content.Context
 import android.os.BatteryManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -14,9 +18,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 class WebAppInterface(private val context: Context, private val webView: WebView) {
     private val appFiles = File(context.filesDir, "dolphin").apply { mkdirs() }
@@ -47,6 +55,18 @@ class WebAppInterface(private val context: Context, private val webView: WebView
                             vibrator.vibrate(duration)
                         }
                         success(id, JSONObject.NULL)
+                    }
+                    "device.getSensorData" -> {
+                        val sensorName = params.optString("sensor")
+                        val sensorType = when (sensorName) {
+                            "accelerometer" -> Sensor.TYPE_ACCELEROMETER
+                            "gyroscope" -> Sensor.TYPE_GYROSCOPE
+                            "magnetometer" -> Sensor.TYPE_MAGNETIC_FIELD
+                            "light" -> Sensor.TYPE_LIGHT
+                            "proximity" -> Sensor.TYPE_PROXIMITY
+                            else -> throw IllegalArgumentException("Unsupported sensor")
+                        }
+                        success(id, readSensor(sensorType))
                     }
                     "device.getInfo" -> {
                         val battery = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
@@ -90,6 +110,40 @@ class WebAppInterface(private val context: Context, private val webView: WebView
                 failure(id, "NATIVE_ERROR", e.message ?: "Native operation failed")
             }
         }
+    }
+
+
+    private suspend fun readSensor(type: Int): JSONObject {
+        val manager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val sensor = manager.getDefaultSensor(type)
+            ?: throw IllegalStateException("Requested sensor is not available on this device")
+        val reading = withTimeoutOrNull(2_000L) {
+            suspendCancellableCoroutine { continuation ->
+                val listener = object : SensorEventListener {
+                    override fun onSensorChanged(event: SensorEvent) {
+                        if (!continuation.isActive) return
+                        val values = org.json.JSONArray()
+                        event.values.forEach { values.put(it.toDouble()) }
+                        val result = JSONObject()
+                            .put("sensor", sensor.name)
+                            .put("type", sensor.stringType)
+                            .put("values", values)
+                            .put("accuracy", event.accuracy)
+                            .put("timestampNanos", event.timestamp)
+                        manager.unregisterListener(this)
+                        continuation.resume(result)
+                    }
+                    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
+                }
+                continuation.invokeOnCancellation { manager.unregisterListener(listener) }
+                if (!manager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_NORMAL)) {
+                    continuation.resumeWithException(
+                        IllegalStateException("Unable to register sensor listener")
+                    )
+                }
+            }
+        }
+        return reading ?: throw IllegalStateException("Sensor did not provide a reading in time")
     }
 
     fun close() {
