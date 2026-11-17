@@ -31,62 +31,22 @@ jobs:
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init SmokeApp --package-id com.example.smoke
           test -f SmokeApp/dolphin.config.json
           test -f SmokeApp/android/app/src/main/AndroidManifest.xml
-          grep -q 'namespace = "com.example.smoke"' SmokeApp/android/app/build.gradle.kts
-          grep -q 'applicationId = "com.example.smoke"' SmokeApp/android/app/build.gradle.kts
+          grep -Fq 'namespace = "com.example.smoke"' SmokeApp/android/app/build.gradle.kts
+          grep -Fq 'applicationId = "com.example.smoke"' SmokeApp/android/app/build.gradle.kts
           test -f SmokeApp/android/app/src/main/java/com/example/smoke/MainActivity.kt
-          grep -q '^package com.example.smoke$' SmokeApp/android/app/src/main/java/com/example/smoke/MainActivity.kt
+          grep -Fq 'package com.example.smoke' SmokeApp/android/app/src/main/java/com/example/smoke/MainActivity.kt
           test -f SmokeApp/src/App.tsx
           cd SmokeApp
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config package-id com.example.changed
-          grep -q 'namespace = "com.example.changed"' android/app/build.gradle.kts
-          grep -q 'applicationId = "com.example.changed"' android/app/build.gradle.kts
+          grep -Fq 'namespace = "com.example.changed"' android/app/build.gradle.kts
+          grep -Fq 'applicationId = "com.example.changed"' android/app/build.gradle.kts
           test -f android/app/src/main/java/com/example/changed/MainActivity.kt
-          grep -q '^package com.example.changed
-      - name: Build starter app
-        run: pnpm --filter dolphin-app build
-
-  android-shell:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-      - uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools platforms;android-35 build-tools;35.0.0
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.9"
-      - name: Build Android shell
-        run: gradle -p packages/android-shell/template assembleDebug
- android/app/src/main/java/com/example/changed/MainActivity.kt
+          grep -Fq 'package com.example.changed' android/app/src/main/java/com/example/changed/MainActivity.kt
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config package-id com.example.changed
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config package-id com.example.finalized
-          grep -q 'namespace = "com.example.finalized"' android/app/build.gradle.kts
+          grep -Fq 'namespace = "com.example.finalized"' android/app/build.gradle.kts
           test -f android/app/src/main/java/com/example/finalized/MainActivity.kt
-          grep -q '^package com.example.finalized
-      - name: Build starter app
-        run: pnpm --filter dolphin-app build
-
-  android-shell:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-      - uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools platforms;android-35 build-tools;35.0.0
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: "8.9"
-      - name: Build Android shell
-        run: gradle -p packages/android-shell/template assembleDebug
- android/app/src/main/java/com/example/finalized/MainActivity.kt
+          grep -Fq 'package com.example.finalized' android/app/src/main/java/com/example/finalized/MainActivity.kt
       - name: Build starter app
         run: pnpm --filter dolphin-app build
 
