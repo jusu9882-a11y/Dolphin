@@ -75,6 +75,7 @@ class MainActivity : Activity() {
             (uri.host != "appassets.androidplatform.net" || uri.path?.startsWith("/assets/") == true)
 
     override fun onDestroy() {
+        if (::bridge.isInitialized) bridge.close()
         webView.destroy()
         super.onDestroy()
     }
