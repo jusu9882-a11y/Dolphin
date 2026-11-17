@@ -36,6 +36,8 @@ jobs:
           test -f SmokeApp/android/app/src/main/java/com/example/smoke/MainActivity.kt
           grep -Fq 'package com.example.smoke' SmokeApp/android/app/src/main/java/com/example/smoke/MainActivity.kt
           test -f SmokeApp/src/App.tsx
+          ! grep -Eq 'android.permission.(CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_MEDIA_|MANAGE_EXTERNAL_STORAGE)' SmokeApp/android/app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.INTERNET' SmokeApp/android/app/src/main/AndroidManifest.xml
           cd SmokeApp
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config package-id com.example.changed
           grep -Fq 'namespace = "com.example.changed"' android/app/build.gradle.kts
