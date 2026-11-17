@@ -24,6 +24,14 @@ jobs:
         run: pnpm --filter @dolphin/bridge build
       - name: Build CLI
         run: pnpm --filter @dolphin/cli build
+      - name: Smoke-test CLI scaffolding
+        run: |
+          mkdir -p /tmp/dolphin-smoke
+          cd /tmp/dolphin-smoke
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init SmokeApp --package-id com.example.smoke
+          test -f SmokeApp/dolphin.config.json
+          test -f SmokeApp/android/app/src/main/AndroidManifest.xml
+          test -f SmokeApp/src/App.tsx
       - name: Build starter app
         run: pnpm --filter dolphin-app build
 
