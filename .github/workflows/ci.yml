@@ -89,13 +89,13 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       - name: Build Dolphin CLI
         run: pnpm --filter @dolphin/cli build
-      - name: Generate device-test app
+      - name: Generate voice-recorder app
         run: |
           mkdir -p /tmp/dolphin-device-test
           cd /tmp/dolphin-device-test
-          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init DolphinDeviceTest --package-id com.dolphin.devicetest
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init DolphinVoiceRecorder --package-id com.dolphin.voicerecorder
           cd DolphinVoiceRecorder
-          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability camera enable
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Dolphin Voice Recorder"
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability microphone enable
           cd ..
       - name: Build app web assets
@@ -106,11 +106,11 @@ jobs:
           mkdir -p android/app/src/main/assets/www
           cp -R dist/. android/app/src/main/assets/www/
       - name: Build installable Android APK
-        run: gradle -p /tmp/dolphin-device-test/DolphinDeviceTest/android assembleDebug
+        run: gradle -p /tmp/dolphin-device-test/DolphinVoiceRecorder/android assembleDebug
       - name: Upload voice-recorder APK
         uses: actions/upload-artifact@v4
         with:
-          name: dolphin-android-device-test
+          name: dolphin-voice-recorder-android
           path: /tmp/dolphin-device-test/DolphinDeviceTest/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
