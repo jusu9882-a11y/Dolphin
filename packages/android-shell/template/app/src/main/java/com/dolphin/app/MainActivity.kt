@@ -1,8 +1,12 @@
 package com.dolphin.app
 
+import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.webkit.PermissionRequest
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
@@ -15,6 +19,11 @@ class MainActivity : Activity() {
     private lateinit var webView: WebView
     private lateinit var bridge: WebAppInterface
     private var devOrigin: String? = null
+    private var pendingWebPermission: PermissionRequest? = null
+    private var pendingWebResources: Array<String> = emptyArray()
+    private var pendingAndroidPermissions: Array<String> = emptyArray()
+
+    companion object { private const val DEVICE_PERMISSION_REQUEST = 701 }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +47,14 @@ class MainActivity : Activity() {
             setSupportMultipleWindows(false)
             javaScriptCanOpenWindowsAutomatically = false
         }
-        webView.webChromeClient = WebChromeClient()
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onPermissionRequest(request: PermissionRequest) {
+                runOnUiThread { handleWebPermissionRequest(request) }
+            }
+            override fun onPermissionRequestCanceled(request: PermissionRequest) {
+                if (pendingWebPermission === request) clearPendingPermission(deny = false)
+            }
+        }
         webView.webViewClient = object : WebViewClient() {
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest) =
                 assetLoader.shouldInterceptRequest(request.url)
@@ -60,6 +76,82 @@ class MainActivity : Activity() {
         webView.loadUrl(startUrl)
     }
 
+    private fun handleWebPermissionRequest(request: PermissionRequest) {
+        if (!isTrustedOrigin(request.origin) || pendingWebPermission != null) {
+            request.deny()
+            return
+        }
+        val resources = request.resources.distinct()
+        if (resources.isEmpty() || resources.any {
+                it != PermissionRequest.RESOURCE_VIDEO_CAPTURE &&
+                it != PermissionRequest.RESOURCE_AUDIO_CAPTURE
+            }) {
+            request.deny()
+            return
+        }
+        val androidPermissions = mutableListOf<String>()
+        if (PermissionRequest.RESOURCE_VIDEO_CAPTURE in resources) androidPermissions.add(Manifest.permission.CAMERA)
+        if (PermissionRequest.RESOURCE_AUDIO_CAPTURE in resources) androidPermissions.add(Manifest.permission.RECORD_AUDIO)
+
+        val declared = packageManager.getPackageInfo(packageName, PackageManager.GET_PERMISSIONS)
+            .requestedPermissions?.toSet() ?: emptySet()
+        if (androidPermissions.any { it !in declared }) {
+            request.deny()
+            return
+        }
+
+        pendingWebPermission = request
+        pendingWebResources = resources.toTypedArray()
+        pendingAndroidPermissions = androidPermissions.toTypedArray()
+        val features = buildList {
+            if (Manifest.permission.CAMERA in androidPermissions) add("camera")
+            if (Manifest.permission.RECORD_AUDIO in androidPermissions) add("microphone")
+        }.joinToString(" and ")
+
+        AlertDialog.Builder(this)
+            .setTitle("Allow device access?")
+            .setMessage("This app is requesting access to your $features. Access is used only after you choose Continue and Android grants the permission. You can deny this request.")
+            .setNegativeButton("Not now") { _, _ -> clearPendingPermission(deny = true) }
+            .setOnCancelListener { clearPendingPermission(deny = true) }
+            .setPositiveButton("Continue") { _, _ ->
+                val missing = pendingAndroidPermissions.filter {
+                    checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+                }
+                if (missing.isEmpty()) {
+                    grantPendingPermission()
+                } else {
+                    requestPermissions(missing.toTypedArray(), DEVICE_PERMISSION_REQUEST)
+                }
+            }
+            .show()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != DEVICE_PERMISSION_REQUEST) return
+        val allGranted = pendingAndroidPermissions.all {
+            checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
+        }
+        if (allGranted) grantPendingPermission() else clearPendingPermission(deny = true)
+    }
+
+    private fun grantPendingPermission() {
+        val request = pendingWebPermission ?: return
+        val resources = pendingWebResources
+        clearPendingPermission(deny = false)
+        request.grant(resources)
+    }
+
+    private fun clearPendingPermission(deny: Boolean) {
+        val request = pendingWebPermission
+        pendingWebPermission = null
+        pendingWebResources = emptyArray()
+        pendingAndroidPermissions = emptyArray()
+        if (deny) runCatching { request?.deny() }
+    }
+
     private fun isAllowedDevUrl(value: String): Boolean {
         val uri = runCatching { Uri.parse(value) }.getOrNull() ?: return false
         return uri.scheme == "http" && uri.host == "127.0.0.1" &&
@@ -75,8 +167,9 @@ class MainActivity : Activity() {
             (uri.host != "appassets.androidplatform.net" || uri.path?.startsWith("/assets/") == true)
 
     override fun onDestroy() {
+        clearPendingPermission(deny = true)
         if (::bridge.isInitialized) bridge.close()
-        webView.destroy()
+        if (::webView.isInitialized) webView.destroy()
         super.onDestroy()
     }
 }
