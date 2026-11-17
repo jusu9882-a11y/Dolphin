@@ -39,7 +39,7 @@ export const initCommand = new Command("init").description("Create a new Dolphin
       await fs.rm(oldDir, { recursive: true });
     }
     await writeConfig({
-      appName, packageId, version: "1.0.0", icon: "./assets/icon.png", webDir: "dist"
+      appName, packageId, version: "1.0.0", icon: "./assets/icon.png", webDir: "dist", capabilities: []
     }, target);
     console.log(pc.green("Created " + appName + ". Next: cd " + appName + " && npm install && dolphin run"));
   });
