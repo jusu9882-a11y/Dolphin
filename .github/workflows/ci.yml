@@ -39,6 +39,17 @@ jobs:
           ! grep -Eq 'android.permission.(CAMERA|RECORD_AUDIO|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_MEDIA_|MANAGE_EXTERNAL_STORAGE)' SmokeApp/android/app/src/main/AndroidManifest.xml
           grep -q 'android.permission.INTERNET' SmokeApp/android/app/src/main/AndroidManifest.xml
           cd SmokeApp
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability camera enable
+          grep -Fq 'android.permission.CAMERA' android/app/src/main/AndroidManifest.xml
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability microphone enable
+          grep -Fq 'android.permission.RECORD_AUDIO' android/app/src/main/AndroidManifest.xml
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability camera disable
+          ! grep -Fq 'android.permission.CAMERA' android/app/src/main/AndroidManifest.xml
+          grep -Fq 'android.permission.RECORD_AUDIO' android/app/src/main/AndroidManifest.xml
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability microphone disable
+          ! grep -Fq 'android.permission.RECORD_AUDIO' android/app/src/main/AndroidManifest.xml
+          cd ..
+          cd SmokeApp
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config package-id com.example.changed
           grep -Fq 'namespace = "com.example.changed"' android/app/build.gradle.kts
           grep -Fq 'applicationId = "com.example.changed"' android/app/build.gradle.kts
