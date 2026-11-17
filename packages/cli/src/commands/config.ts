@@ -55,7 +55,7 @@ configCommand.command("package-id").description("Set the Android application ID 
       const oldPath = path.join(oldDir, file);
       try {
         const content = await fs.readFile(oldPath, "utf8");
-        sources.push({ oldPath, content: content.replace(new RegExp("^package\\s+" + oldPackage.replaceAll(".", "\\.") + "\\s*$", "m"), \`package \${id}\`) });
+        sources.push({ oldPath, content: content.replace(new RegExp("^package\\s+" + oldPackage.replaceAll(".", "\\.") + "\\s*$", "m"), `package ${id}`) });
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
       }
