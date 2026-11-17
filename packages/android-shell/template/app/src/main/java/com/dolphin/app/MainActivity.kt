@@ -51,7 +51,8 @@ class MainActivity : Activity() {
         if (BuildConfig.DEBUG && devOrigin != null) allowedOrigins.add(devOrigin!!)
         WebViewCompat.addWebMessageListener(webView, "DolphinNative", allowedOrigins) { _, message, sourceOrigin, isMainFrame, _ ->
             if (!isMainFrame || !isTrustedOrigin(sourceOrigin)) return@addWebMessageListener
-            bridge.handleMessage(message.data)
+            val payload = message.data ?: return@addWebMessageListener
+            bridge.handleMessage(payload)
         }
 
         val startUrl = if (BuildConfig.DEBUG && devOrigin != null) devUrl!! else
