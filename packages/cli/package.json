@@ -1,0 +1,10 @@
+{
+  "name": "@dolphin/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": { "dolphin": "./dist/index.js" },
+  "files": ["dist", "templates"],
+  "scripts": { "build": "tsc -p tsconfig.json", "typecheck": "tsc -p tsconfig.json --noEmit" },
+  "dependencies": { "@dolphin/bridge": "workspace:*", "commander": "^13.1.0", "picocolors": "^1.1.1" },
+  "devDependencies": { "@types/node": "^22.13.4", "typescript": "^5.7.3" }
+}
