@@ -23,6 +23,10 @@ Dolphin is an Android-first app framework for building mobile applications with 
 - Communicate asynchronously between JavaScript and native Kotlin code.
 - Perform bounded app-private file reads/writes on an I/O dispatcher, with canonical-path traversal protection.
 
+## Device permissions and privacy
+
+See [Device Permissions and Privacy Standard](docs/DEVICE_PERMISSIONS.md) for Dolphin's least-privilege permission rules, WebView camera/microphone boundary, and store-release requirements.
+
 ## Security baseline
 
 The Android shell uses AndroidX WebKit's `WebViewCompat.addWebMessageListener` with an explicit origin allow-list and rejects iframe messages. It avoids a global `@JavascriptInterface`, which cannot reliably validate the calling frame's origin. Keep this boundary intact: never allow arbitrary remote origins or enable unrestricted file access.
