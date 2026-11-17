@@ -28,7 +28,7 @@ No framework can guarantee store approval. Dolphin must make compliant behavior 
 | Internet | `INTERNET` is a normal install-time manifest permission; use HTTPS for network traffic. |
 | Camera | Declare `CAMERA` only for apps with a camera feature; request runtime permission when the feature is activated. |
 | Microphone | Declare `RECORD_AUDIO` only for apps with an audio feature; request at feature use. |
-| Accelerometer / gyroscope | Usually accessed through `SensorManager` without a runtime permission. Respect sensor availability and sampling needs. |
+| Accelerometer / gyroscope | Accessed through `SensorManager` without a runtime permission; Dolphin exposes one-shot readings and reports unavailable sensors. |
 | GPS / location | Request the minimum coarse/fine location scope only when a location feature is used; background location needs separate justification and review. |
 | Photos / videos | Prefer Android Photo Picker or Storage Access Framework over broad media/storage permissions. |
 | Bluetooth / nearby devices | Use only the applicable API-level permissions for the actual Bluetooth operation. |
@@ -70,4 +70,5 @@ Microsoft Store's Windows capability declarations must match the Windows impleme
 - New projects start with no camera or microphone permissions declared.
 - `dolphin config capability camera enable|disable` and `dolphin config capability microphone enable|disable` opt those permissions into or out of the generated Android manifest and update `dolphin.config.json`.
 - The Android shell mediates WebView camera/microphone requests with trusted-origin checks, disclosure, and Android runtime permission checks.
-- Sensor APIs, generalized permission revocation handling, privacy policy templates, and real-device verification remain release work.
+- One-shot sensor APIs are implemented for accelerometer, gyroscope, magnetometer, light and proximity sensors; unavailable hardware and sensor timeouts return errors.
+- Continuous sensor streams, generalized permission revocation handling, privacy policy templates, and real-device verification remain release work.
