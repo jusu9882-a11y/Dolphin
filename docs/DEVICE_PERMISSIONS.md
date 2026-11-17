@@ -47,9 +47,10 @@ The native WebView host must not grant web permissions automatically. Before gra
 - Show a clear disclosure before the system prompt and grant only after the user agrees and Android grants access.
 - Deny by default on cancellation, origin mismatch, missing permission, or lifecycle loss.
 - Cancel pending WebView permission requests when the activity is destroyed or the request is cancelled.
+- Re-check camera/microphone runtime grants when the activity resumes; if a previously granted permission has been revoked in Android settings, reload the trusted WebView document to terminate page-owned capture tracks and require a fresh mediated request.
 - Keep camera/microphone use foreground and visible unless a separately reviewed Android foreground-service design is implemented.
 
-The Android template now intercepts WebView camera/microphone permission requests, accepts only the trusted packaged origin or debug loopback origin, rejects unknown resources, shows an in-app disclosure, and then checks/requests the matching Android runtime permission. It grants only the exact requested WebView resources after Android reports permission granted. Pending requests are denied on cancellation or activity destruction. This implementation still requires CI verification and real-device testing before being considered release-ready.
+The Android template intercepts WebView camera/microphone permission requests, accepts only the trusted packaged origin or debug loopback origin, rejects unknown resources, shows an in-app disclosure, and checks/requests the matching Android runtime permission. It grants only the exact requested WebView resources after Android reports permission granted. Pending requests are denied on cancellation or activity destruction. On activity resume, it detects camera/microphone permissions that were previously granted but have since been revoked and reloads the trusted WebView document so active page-owned capture tracks are torn down; any new capture request must pass through the disclosure and OS permission checks again. This lifecycle path is covered by Android compilation in CI but still requires real-device testing before release.
 
 ## Store and privacy release gates
 
@@ -71,4 +72,4 @@ Microsoft Store's Windows capability declarations must match the Windows impleme
 - `dolphin config capability camera enable|disable` and `dolphin config capability microphone enable|disable` opt those permissions into or out of the generated Android manifest and update `dolphin.config.json`.
 - The Android shell mediates WebView camera/microphone requests with trusted-origin checks, disclosure, and Android runtime permission checks.
 - One-shot sensor APIs and continuous `watchSensor` subscriptions are implemented for accelerometer, gyroscope, magnetometer, light and proximity sensors; unavailable hardware and sensor timeouts return errors. Streams support explicit stop callbacks and are stopped when the Android activity leaves the foreground.
-- Generalized permission revocation handling, privacy policy templates, and real-device verification remain release work. Sensor streams currently stop on backgrounding; applications must subscribe again after returning to the foreground.
+- Generalized permission management for additional capabilities, privacy policy templates, and real-device verification remain release work. Sensor streams currently stop on backgrounding; applications must subscribe again after returning to the foreground.
