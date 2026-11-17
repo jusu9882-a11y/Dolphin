@@ -45,8 +45,10 @@ configCommand.command("package-id").description("Set the Android application ID 
       throw new Error("Android Gradle file is missing namespace or applicationId; no files were changed.");
     const sourceRoot = path.join(process.cwd(), "android/app/src/main/java");
     const kotlinFiles = ["MainActivity.kt", "WebAppInterface.kt"];
-    const oldPackage = "com.dolphin.app";
-    const oldDir = path.join(sourceRoot, ...oldPackage.split("."));
+    const configuredDir = path.join(sourceRoot, ...config.packageId.split("."));
+    const defaultDir = path.join(sourceRoot, "com", "dolphin", "app");
+    const oldDir = await fs.access(configuredDir).then(() => configuredDir).catch(() => defaultDir);
+    const oldPackage = path.relative(sourceRoot, oldDir).split(path.sep).join(".");
     const newDir = path.join(sourceRoot, ...id.split("."));
     const sources: Array<{ oldPath: string; content: string }> = [];
     for (const file of kotlinFiles) {
