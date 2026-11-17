@@ -49,7 +49,7 @@ The native WebView host must not grant web permissions automatically. Before gra
 - Cancel pending WebView permission requests when the activity is destroyed or the request is cancelled.
 - Keep camera/microphone use foreground and visible unless a separately reviewed Android foreground-service design is implemented.
 
-The current Android template uses a plain `WebChromeClient`; camera/microphone WebView permission mediation is **not implemented yet**. Until it is implemented and tested, WebView camera/microphone access must remain denied. Do not claim those capabilities are ready.
+The Android template now intercepts WebView camera/microphone permission requests, accepts only the trusted packaged origin or debug loopback origin, rejects unknown resources, shows an in-app disclosure, and then checks/requests the matching Android runtime permission. It grants only the exact requested WebView resources after Android reports permission granted. Pending requests are denied on cancellation or activity destruction. This implementation still requires CI verification and real-device testing before being considered release-ready.
 
 ## Store and privacy release gates
 
@@ -67,6 +67,7 @@ Microsoft Store's Windows capability declarations must match the Windows impleme
 
 ## Current implementation status
 
-- Android manifest currently declares `INTERNET` and `VIBRATE`.
-- Android shell currently does not implement WebView camera/microphone permission mediation.
-- A general runtime permission/capability system, user-facing disclosure UI, capability configuration per generated app, privacy policy template, and automated permission tests remain release work.
+- New projects start with no camera or microphone permissions declared.
+- `dolphin config capability camera enable|disable` and `dolphin config capability microphone enable|disable` opt those permissions into or out of the generated Android manifest and update `dolphin.config.json`.
+- The Android shell mediates WebView camera/microphone requests with trusted-origin checks, disclosure, and Android runtime permission checks.
+- Sensor APIs, generalized permission revocation handling, privacy policy templates, and real-device verification remain release work.
