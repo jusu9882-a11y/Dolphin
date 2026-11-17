@@ -100,7 +100,7 @@ configCommand.command("capability")
     const hasPermission = new RegExp(`<uses-permission\\s+android:name=["']${permission}["']\\s*/>`).test(xml);
     if (state === "enable" && !hasPermission) {
       if (!xml.includes("<application")) throw new Error("Android manifest has no application element");
-      xml = xml.replace("<application", declaration + "\\n    <application");
+      xml = xml.replace("<application", declaration + "\n    <application");
     } else if (state === "disable" && hasPermission) {
       xml = xml.replace(new RegExp(`^\\s*<uses-permission\\s+android:name=["']${permission}["']\\s*/>\\s*\\n?`, "m"), "");
     }
