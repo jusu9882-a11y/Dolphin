@@ -21,6 +21,8 @@ Dolphin is an Android-first app framework for building mobile applications with 
 - Run a Vite development server and launch an authorized Android device through ADB reverse.
 - Build web assets and package an APK using the Gradle Wrapper when present, or a system Gradle installation as a fallback.
 - Communicate asynchronously between JavaScript and native Kotlin code.
+- Opt camera and microphone permissions into an app manifest only when explicitly enabled with `dolphin config capability camera enable` or `dolphin config capability microphone enable`.
+- Mediate WebView camera/microphone requests with trusted-origin checks, an in-app disclosure, and Android runtime permission checks.
 - Perform bounded app-private file reads/writes on an I/O dispatcher, with canonical-path traversal protection.
 
 ## Device permissions and privacy
@@ -36,9 +38,10 @@ The Android shell uses AndroidX WebKit's `WebViewCompat.addWebMessageListener` w
 GitHub Actions currently:
 1. Installs workspace dependencies and builds the TypeScript bridge and CLI.
 2. Scaffolds an app with a custom package ID and checks generated Gradle/Kotlin package configuration.
-3. Changes that package ID again and verifies the source package is moved consistently.
-4. Builds the React starter app.
-5. Builds the Android shell with Java 17, Android SDK 35, and Gradle 8.9.
+3. Verifies sensitive device permissions are absent by default and can be enabled/disabled per app.
+4. Changes that package ID again and verifies the source package is moved consistently.
+5. Builds the React starter app.
+6. Builds the Android shell with Java 17, Android SDK 35, and Gradle 8.9.
 
 ## Remaining release gates
 
