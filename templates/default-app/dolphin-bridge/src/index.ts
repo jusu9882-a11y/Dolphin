@@ -1,4 +1,7 @@
 export interface DeviceInfo { model: string; osVersion: string; batteryLevel: number; }
+export type DeviceSensor = "accelerometer" | "gyroscope" | "magnetometer" | "light" | "proximity";
+export interface SensorReading { sensor: string; type: string; values: number[]; accuracy: number; timestampNanos: number; }
+
 type RpcResult<T> = { id: string; result: T } | { id: string; error: { code: string; message: string } };
 declare global {
   interface Window {
@@ -32,7 +35,11 @@ const Dolphin = {
   isNative: () => typeof window !== "undefined" && typeof window.DolphinNative?.postMessage === "function",
   device: {
     vibrate: (durationMs = 100) => durationMs >= 0 && durationMs <= 10000 ? rpc<void>("device.vibrate", { durationMs }) : Promise.reject(new RangeError("Invalid vibration duration")),
-    getInfo: () => rpc<DeviceInfo>("device.getInfo")
+    getInfo: () => rpc<DeviceInfo>("device.getInfo"),
+    getSensorData: (sensor: DeviceSensor): Promise<SensorReading> => {
+      const supported: DeviceSensor[] = ["accelerometer", "gyroscope", "magnetometer", "light", "proximity"];
+      return supported.includes(sensor) ? rpc<SensorReading>("device.getSensorData", { sensor }) : Promise.reject(new RangeError("Unsupported sensor"));
+    }
   },
   ui: { showToast: (message: string) => rpc<void>("ui.showToast", { message }) },
   fs: {
