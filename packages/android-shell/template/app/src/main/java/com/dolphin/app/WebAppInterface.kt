@@ -6,6 +6,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Handler
+import android.os.Looper
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -29,6 +31,8 @@ import kotlin.coroutines.resumeWithException
 class WebAppInterface(private val context: Context, private val webView: WebView) {
     private val appFiles = File(context.filesDir, "dolphin").apply { mkdirs() }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    private val sensorStreams = mutableMapOf<String, SensorEventListener>()
 
     fun handleMessage(raw: String) {
         val request = try { JSONObject(raw) } catch (_: Exception) { return }
@@ -67,6 +71,49 @@ class WebAppInterface(private val context: Context, private val webView: WebView
                             else -> throw IllegalArgumentException("Unsupported sensor")
                         }
                         success(id, readSensor(sensorType))
+                    }
+                    "device.startSensorStream" -> {
+                        val streamId = params.optString("streamId")
+                        require(streamId.matches(Regex("[A-Za-z0-9_-]{1,80}"))) { "Invalid sensor stream ID" }
+                        require(!sensorStreams.containsKey(streamId)) { "Sensor stream already exists" }
+                        val sensorName = params.optString("sensor")
+                        val sensorType = sensorType(sensorName)
+                        val sensor = sensorManager.getDefaultSensor(sensorType)
+                            ?: throw IllegalStateException("Requested sensor is not available on this device")
+                        val samplingPeriod = when (params.optString("frequency", "normal")) {
+                            "ui" -> SensorManager.SENSOR_DELAY_UI
+                            "game" -> SensorManager.SENSOR_DELAY_GAME
+                            "fast" -> SensorManager.SENSOR_DELAY_FASTEST
+                            "normal" -> SensorManager.SENSOR_DELAY_NORMAL
+                            else -> throw IllegalArgumentException("Unsupported sensor frequency")
+                        }
+                        val listener = object : SensorEventListener {
+                            override fun onSensorChanged(event: SensorEvent) {
+                                if (!sensorStreams.containsKey(streamId)) return
+                                val values = org.json.JSONArray()
+                                event.values.forEach { values.put(it.toDouble()) }
+                                val data = JSONObject()
+                                    .put("streamId", streamId)
+                                    .put("reading", JSONObject()
+                                        .put("sensor", sensor.name)
+                                        .put("type", sensor.stringType)
+                                        .put("values", values)
+                                        .put("accuracy", event.accuracy)
+                                        .put("timestampNanos", event.timestamp))
+                                emitSensorEvent(data)
+                            }
+                            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
+                        }
+                        require(sensorManager.registerListener(listener, sensor, samplingPeriod)) {
+                            "Unable to register sensor listener"
+                        }
+                        sensorStreams[streamId] = listener
+                        success(id, JSONObject().put("streamId", streamId))
+                    }
+                    "device.stopSensorStream" -> {
+                        val streamId = params.optString("streamId")
+                        stopSensorStream(streamId)
+                        success(id, JSONObject.NULL)
                     }
                     "device.getInfo" -> {
                         val battery = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
@@ -113,6 +160,34 @@ class WebAppInterface(private val context: Context, private val webView: WebView
     }
 
 
+
+    private fun sensorType(name: String): Int = when (name) {
+        "accelerometer" -> Sensor.TYPE_ACCELEROMETER
+        "gyroscope" -> Sensor.TYPE_GYROSCOPE
+        "magnetometer" -> Sensor.TYPE_MAGNETIC_FIELD
+        "light" -> Sensor.TYPE_LIGHT
+        "proximity" -> Sensor.TYPE_PROXIMITY
+        else -> throw IllegalArgumentException("Unsupported sensor")
+    }
+
+    private fun stopSensorStream(streamId: String) {
+        sensorStreams.remove(streamId)?.let { sensorManager.unregisterListener(it) }
+    }
+
+    fun pauseSensors() {
+        sensorStreams.keys.toList().forEach(::stopSensorStream)
+    }
+
+    private fun emitSensorEvent(data: JSONObject) {
+        val payload = JSONObject.quote(data.toString())
+        webView.post {
+            webView.evaluateJavascript(
+                "window.__dolphinSensorEvent && window.__dolphinSensorEvent($payload);",
+                null
+            )
+        }
+    }
+
     private suspend fun readSensor(type: Int): JSONObject {
         val manager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val sensor = manager.getDefaultSensor(type)
@@ -147,6 +222,7 @@ class WebAppInterface(private val context: Context, private val webView: WebView
     }
 
     fun close() {
+        pauseSensors()
         scope.cancel()
     }
 
