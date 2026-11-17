@@ -22,6 +22,8 @@ class MainActivity : Activity() {
     private var pendingWebPermission: PermissionRequest? = null
     private var pendingWebResources: Array<String> = emptyArray()
     private var pendingAndroidPermissions: Array<String> = emptyArray()
+    private var lastCameraPermissionGranted: Boolean? = null
+    private var lastMicrophonePermissionGranted: Boolean? = null
 
     companion object { private const val DEVICE_PERMISSION_REQUEST = 701 }
 
@@ -165,6 +167,28 @@ class MainActivity : Activity() {
     private fun isTrustedUrl(uri: Uri): Boolean =
         isTrustedOrigin(uri) &&
             (uri.host != "appassets.androidplatform.net" || uri.path?.startsWith("/assets/") == true)
+
+    override fun onResume() {
+        super.onResume()
+        if (!::webView.isInitialized) return
+
+        val cameraGranted = checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        val microphoneGranted = checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        val permissionWasRevoked =
+            (lastCameraPermissionGranted == true && !cameraGranted) ||
+            (lastMicrophonePermissionGranted == true && !microphoneGranted)
+
+        lastCameraPermissionGranted = cameraGranted
+        lastMicrophonePermissionGranted = microphoneGranted
+
+        if (permissionWasRevoked) {
+            // Reloading the trusted document tears down its active getUserMedia tracks.
+            // Any subsequent capture request must pass through the disclosure and OS checks again.
+            clearPendingPermission(deny = true)
+            webView.stopLoading()
+            webView.reload()
+        }
+    }
 
     override fun onPause() {
         if (::bridge.isInitialized) bridge.pauseSensors()
