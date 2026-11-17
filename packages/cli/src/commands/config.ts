@@ -60,6 +60,8 @@ configCommand.command("package-id").description("Set the Android application ID 
         if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
       }
     }
+    if (sources.length !== kotlinFiles.length)
+      throw new Error("Android Kotlin source files are incomplete; package ID was not changed.");
     const updatedGradle = gradleText
       .replace(/namespace\s*=\s*"[^"]+"/, `namespace = "${id}"`)
       .replace(/applicationId\s*=\s*"[^"]+"/, `applicationId = "${id}"`);
