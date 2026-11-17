@@ -111,6 +111,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dolphin-voice-recorder-android
-          path: /tmp/dolphin-device-test/DolphinDeviceTest/android/app/build/outputs/apk/debug/*.apk
+          path: /tmp/dolphin-device-test/DolphinVoiceRecorder/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
