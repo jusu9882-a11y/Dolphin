@@ -39,6 +39,10 @@ configCommand.command("package-id").description("Set the Android application ID 
   .action(async (id: string) => {
     if (!validPackageId(id)) throw new Error("Invalid package ID. Expected reverse-DNS form, e.g. com.example.app");
     const config = await readConfig();
+    if (id === config.packageId) {
+      console.log("Package ID is already set: " + id);
+      return;
+    }
     const gradle = path.join(process.cwd(), "android/app/build.gradle.kts");
     const gradleText = await fs.readFile(gradle, "utf8");
     if (!/namespace\s*=\s*"[^"]+"/.test(gradleText) || !/applicationId\s*=\s*"[^"]+"/.test(gradleText))
