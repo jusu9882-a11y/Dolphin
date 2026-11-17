@@ -23,6 +23,7 @@ Dolphin is an Android-first app framework for building mobile applications with 
 - Communicate asynchronously between JavaScript and native Kotlin code.
 - Opt camera and microphone permissions into an app manifest only when explicitly enabled with `dolphin config capability camera enable` or `dolphin config capability microphone enable`.
 - Mediate WebView camera/microphone requests with trusted-origin checks, an in-app disclosure, and Android runtime permission checks.
+- Read one-shot accelerometer, gyroscope, magnetometer, light and proximity sensor samples through the typed JavaScript bridge when those sensors are present.
 - Perform bounded app-private file reads/writes on an I/O dispatcher, with canonical-path traversal protection.
 
 ## Device permissions and privacy
