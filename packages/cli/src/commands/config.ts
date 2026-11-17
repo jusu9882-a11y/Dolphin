@@ -79,3 +79,36 @@ configCommand.command("package-id").description("Set the Android application ID 
     await writeConfig(config);
     console.log(`Android application ID and Kotlin namespace updated: ${id}`);
   });
+
+configCommand.command("capability")
+  .description("Enable or disable an Android device capability")
+  .argument("<name>", "camera or microphone")
+  .argument("<state>", "enable or disable")
+  .action(async (name: string, state: string) => {
+    const permissions: Record<string, string> = {
+      camera: "android.permission.CAMERA",
+      microphone: "android.permission.RECORD_AUDIO"
+    };
+    if (!(name in permissions)) throw new Error("Capability must be camera or microphone");
+    if (state !== "enable" && state !== "disable") throw new Error("State must be enable or disable");
+
+    const config = await readConfig();
+    const manifest = path.join(process.cwd(), "android/app/src/main/AndroidManifest.xml");
+    let xml = await fs.readFile(manifest, "utf8");
+    const permission = permissions[name];
+    const declaration = `    <uses-permission android:name="${permission}" />`;
+    const hasPermission = new RegExp(`<uses-permission\\s+android:name=["']${permission}["']\\s*/>`).test(xml);
+    if (state === "enable" && !hasPermission) {
+      if (!xml.includes("<application")) throw new Error("Android manifest has no application element");
+      xml = xml.replace("<application", declaration + "\\n    <application");
+    } else if (state === "disable" && hasPermission) {
+      xml = xml.replace(new RegExp(`^\\s*<uses-permission\\s+android:name=["']${permission}["']\\s*/>\\s*\\n?`, "m"), "");
+    }
+    const capabilities = new Set(config.capabilities ?? []);
+    if (state === "enable") capabilities.add(name as "camera" | "microphone");
+    else capabilities.delete(name as "camera" | "microphone");
+    config.capabilities = [...capabilities].sort();
+    await fs.writeFile(manifest, xml);
+    await writeConfig(config);
+    console.log(`Android ${name} capability ${state}d. Runtime consent remains required.`);
+  });
