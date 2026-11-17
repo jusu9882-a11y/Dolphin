@@ -35,14 +35,39 @@ configCommand.command("icon").description("Validate and install a PNG launcher i
     console.log("PNG validated and copied to Android drawable resources.");
     console.warn("For release-quality launcher icons, generate density-specific mipmap assets.");
   });
-configCommand.command("package-id").description("Set the Android application ID").argument("<id>")
+configCommand.command("package-id").description("Set the Android application ID and Kotlin namespace").argument("<id>")
   .action(async (id: string) => {
     if (!validPackageId(id)) throw new Error("Invalid package ID. Expected reverse-DNS form, e.g. com.example.app");
     const config = await readConfig();
+    const gradle = path.join(process.cwd(), "android/app/build.gradle.kts");
+    const gradleText = await fs.readFile(gradle, "utf8");
+    if (!/namespace\s*=\s*"[^"]+"/.test(gradleText) || !/applicationId\s*=\s*"[^"]+"/.test(gradleText))
+      throw new Error("Android Gradle file is missing namespace or applicationId; no files were changed.");
+    const sourceRoot = path.join(process.cwd(), "android/app/src/main/java");
+    const kotlinFiles = ["MainActivity.kt", "WebAppInterface.kt"];
+    const oldPackage = "com.dolphin.app";
+    const oldDir = path.join(sourceRoot, ...oldPackage.split("."));
+    const newDir = path.join(sourceRoot, ...id.split("."));
+    const sources: Array<{ oldPath: string; content: string }> = [];
+    for (const file of kotlinFiles) {
+      const oldPath = path.join(oldDir, file);
+      try {
+        const content = await fs.readFile(oldPath, "utf8");
+        sources.push({ oldPath, content: content.replace(/^package\s+com\.dolphin\.app\s*$/m, `package ${id}`) });
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      }
+    }
+    const updatedGradle = gradleText
+      .replace(/namespace\s*=\s*"[^"]+"/, `namespace = "${id}"`)
+      .replace(/applicationId\s*=\s*"[^"]+"/, `applicationId = "${id}"`);
+    await fs.mkdir(newDir, { recursive: true });
+    for (const source of sources) await fs.writeFile(path.join(newDir, path.basename(source.oldPath)), source.content);
+    for (const source of sources) await fs.rm(source.oldPath);
+    await fs.writeFile(gradle, updatedGradle);
+    if (await fs.readdir(oldDir).then(items => items.length === 0).catch(() => false))
+      await fs.rm(oldDir, { recursive: true });
     config.packageId = id;
     await writeConfig(config);
-    const gradle = path.join(process.cwd(), "android/app/build.gradle.kts");
-    const text = (await fs.readFile(gradle, "utf8")).replace(/applicationId\s*=\s*"[^"]+"/, `applicationId = "${id}"`);
-    await fs.writeFile(gradle, text);
-    console.log(`Package ID updated: ${id}`);
+    console.log(`Android application ID and Kotlin namespace updated: ${id}`);
   });
