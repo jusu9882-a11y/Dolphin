@@ -4,7 +4,15 @@ import assert from "node:assert/strict";
 const sent = [];
 globalThis.window = {
   DolphinNative: {
-    postMessage(payload) { sent.push(JSON.parse(payload)); }
+    postMessage(payload) {
+      const request = JSON.parse(payload);
+      sent.push(request);
+      // The native stop RPC completes with an empty result; mirror that
+      // acknowledgement so the test exercises the SDK's full stop lifecycle.
+      if (request.method === "device.stopSensorStream") {
+        queueMicrotask(() => respond(request, null));
+      }
+    }
   }
 };
 const { Dolphin } = await import("../dist/index.js");
