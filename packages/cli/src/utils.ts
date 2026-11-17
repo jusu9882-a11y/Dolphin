@@ -10,6 +10,7 @@ export interface DolphinConfig {
   icon: string;
   webDir: string;
   devServerUrl?: string;
+  capabilities?: Array<"camera" | "microphone">;
 }
 export const configFile = "dolphin.config.json";
 
