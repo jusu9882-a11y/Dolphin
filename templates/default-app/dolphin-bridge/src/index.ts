@@ -51,8 +51,8 @@ const Dolphin = {
       if (!supported.includes(sensor)) return Promise.reject(new RangeError("Unsupported sensor"));
       if (typeof onReading !== "function") return Promise.reject(new TypeError("onReading must be a function"));
       const streamId = "sensor-" + Date.now() + "-" + (++sequence);
+      sensorListeners.set(streamId, onReading);
       return rpc<{ streamId: string }>("device.startSensorStream", { streamId, sensor, frequency }).then(() => {
-        sensorListeners.set(streamId, onReading);
         let stopped = false;
         return async (): Promise<void> => {
           if (stopped) return;
@@ -60,6 +60,9 @@ const Dolphin = {
           sensorListeners.delete(streamId);
           await rpc<void>("device.stopSensorStream", { streamId });
         };
+      }).catch((error: unknown) => {
+        sensorListeners.delete(streamId);
+        throw error;
       });
     },
     getSensorData: (sensor: DeviceSensor): Promise<SensorReading> => {
