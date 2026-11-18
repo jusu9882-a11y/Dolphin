@@ -114,6 +114,17 @@ jobs:
           path: /tmp/dolphin-device-test/DolphinVoiceRecorder/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+      - name: Build release Android App Bundle
+        run: gradle -p /tmp/dolphin-device-test/DolphinVoiceRecorder/android bundleRelease
+      - name: Verify release Android App Bundle
+        run: test -s /tmp/dolphin-device-test/DolphinVoiceRecorder/android/app/build/outputs/bundle/release/app-release.aab
+      - name: Upload release Android App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-voice-recorder-aab
+          path: /tmp/dolphin-device-test/DolphinVoiceRecorder/android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+          retention-days: 14
       - name: Build experimental Python playground
         run: pnpm --filter dolphin-python-playground build
       - name: Generate Dolphin Python Android app
