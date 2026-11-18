@@ -39,6 +39,23 @@ Run these commands from a generated Dolphin app directory:
 
 For a signed release, set all four signing environment variables before building. Keep the keystore and credentials outside source control. Android App Bundles are distribution artifacts; use a locally signed release bundle or your protected CI signing configuration before uploading to Google Play.
 
+## CLI commands
+
+Run these commands from a generated Dolphin app unless noted otherwise:
+
+- `dolphin --help` / `dolphin --version`: show CLI help and version.
+- `dolphin init <app-name> [--package-id <id>]`: create an app.
+- `dolphin config name <name>`, `config icon <png>`, `config package-id <id>`, and `config capability <camera|microphone> <enable|disable>`: configure the app.
+- `dolphin run [--host <host>] [--port <port>]`: start Vite and launch an authorized Android device.
+- `dolphin build [--apk|--release|--aab|--all]`: package Android outputs.
+- `dolphin doctor`: check Node.js, npm, ADB, project configuration and the available Gradle installation/Wrapper.
+- `dolphin test`: run the configured npm test script; if absent, use typecheck, then build as a validation fallback. Use `dolphin test --typecheck` to require the typecheck script.
+- `dolphin device list`: list Android devices visible to ADB.
+- `dolphin device install [apk-path] [--replace]`: install an APK; without a path, use the newest APK in `dist-android/`. `--replace` preserves app data when Android permits it.
+- `dolphin clean`: remove generated web and packaged output folders. `dolphin clean --all` also removes Android Gradle build outputs; it does not remove source files or dependencies.
+
+Deployment providers, a plugin registry/installer, and a secure CLI self-update channel are not implemented yet. Their commands will be added when those services and their security/update policies exist; Dolphin will not expose placeholder commands that imply those operations work.
+
 ## Experimental Python support
 
 An experimental Python playground lives in `examples/python-playground`. It embeds Pyodide (CPython compiled to WebAssembly) in the web application and CI builds a dedicated Android APK for device testing. The first run downloads the Python runtime from jsDelivr and therefore requires internet access. Python code runs locally in the WebView; it is not uploaded to a server. This is a proof of concept, not yet a stable Dolphin language backend: offline runtime packaging and access to Dolphin native device APIs from Python remain future work.
