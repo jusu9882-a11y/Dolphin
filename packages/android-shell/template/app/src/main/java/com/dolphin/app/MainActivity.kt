@@ -2,7 +2,6 @@ package com.dolphin.app
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -105,27 +104,15 @@ class MainActivity : Activity() {
         pendingWebPermission = request
         pendingWebResources = resources.toTypedArray()
         pendingAndroidPermissions = androidPermissions.toTypedArray()
-        val features = buildList {
-            if (Manifest.permission.CAMERA in androidPermissions) add("camera")
-            if (Manifest.permission.RECORD_AUDIO in androidPermissions) add("microphone")
-        }.joinToString(" and ")
-
-        AlertDialog.Builder(this)
-            .setTitle("Allow device access?")
-            .setMessage("This app is requesting access to your $features. Access is used only after you choose Continue and Android grants the permission. You can deny this request.")
-            .setNegativeButton("Not now") { _, _ -> clearPendingPermission(deny = true) }
-            .setOnCancelListener { clearPendingPermission(deny = true) }
-            .setPositiveButton("Continue") { _, _ ->
-                val missing = pendingAndroidPermissions.filter {
-                    checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
-                }
-                if (missing.isEmpty()) {
-                    grantPendingPermission()
-                } else {
-                    requestPermissions(missing.toTypedArray(), DEVICE_PERMISSION_REQUEST)
-                }
-            }
-            .show()
+        // Use Android's real runtime permission prompt directly.
+        val missing = pendingAndroidPermissions.filter {
+            checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+        }
+        if (missing.isEmpty()) {
+            grantPendingPermission()
+        } else {
+            requestPermissions(missing.toTypedArray(), DEVICE_PERMISSION_REQUEST)
+        }
     }
 
     override fun onRequestPermissionsResult(
