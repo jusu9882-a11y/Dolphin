@@ -1,3 +1,4 @@
 packages:
   - "packages/*"
   - "templates/default-app"
+  - "examples/python-playground"
