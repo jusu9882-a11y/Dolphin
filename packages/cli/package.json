@@ -7,14 +7,18 @@
   },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepack": "node scripts/prepare-package.mjs"
   },
   "dependencies": {
-    "@dolphin/bridge": "workspace:*",
+    "@dolphin/bridge": "^0.1.0",
     "commander": "^13.1.0",
     "picocolors": "^1.1.1"
   },
