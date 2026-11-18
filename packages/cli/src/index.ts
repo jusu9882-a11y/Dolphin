@@ -5,6 +5,10 @@ import { initCommand } from "./commands/init.js";
 import { configCommand } from "./commands/config.js";
 import { runCommand } from "./commands/run.js";
 import { buildCommand } from "./commands/build.js";
+import { doctorCommand } from "./commands/doctor.js";
+import { testCommand } from "./commands/test.js";
+import { cleanCommand } from "./commands/clean.js";
+import { deviceCommand } from "./commands/device.js";
 
 const program = new Command();
 program.name("dolphin")
@@ -14,6 +18,10 @@ program.addCommand(initCommand);
 program.addCommand(configCommand);
 program.addCommand(runCommand);
 program.addCommand(buildCommand);
+program.addCommand(doctorCommand);
+program.addCommand(testCommand);
+program.addCommand(cleanCommand);
+program.addCommand(deviceCommand);
 program.parseAsync(process.argv).catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
   console.error(pc.red(`Dolphin: ${message}`));
