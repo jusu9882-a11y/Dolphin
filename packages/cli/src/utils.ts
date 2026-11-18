@@ -43,6 +43,7 @@ export function packageRoot(): string {
 export async function findShellTemplate(): Promise<string> {
   const candidates = [
     path.join(packageRoot(), "packages", "android-shell", "template"),
+    path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../templates/android-shell"),
     path.join(packageRoot(), "templates", "android-shell")
   ];
   for (const candidate of candidates) {
