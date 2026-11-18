@@ -12,6 +12,7 @@ Dolphin is an Android-first app framework for building mobile applications with 
 - `packages/bridge`: TypeScript promise-based native bridge SDK.
 - `packages/android-shell/template`: Kotlin Android WebView host.
 - `templates/default-app`: React + Vite + TypeScript starter.
+- `examples/python-playground`: experimental Python 3 execution inside the Dolphin WebView using Pyodide/WebAssembly.
 
 ## Current capabilities
 
@@ -25,6 +26,10 @@ Dolphin is an Android-first app framework for building mobile applications with 
 - Mediate WebView camera/microphone requests with trusted-origin checks, an in-app disclosure, and Android runtime permission checks.
 - Read one-shot accelerometer, gyroscope, magnetometer, light and proximity sensor samples through the typed JavaScript bridge when those sensors are present.
 - Perform bounded app-private file reads/writes on an I/O dispatcher, with canonical-path traversal protection.
+
+## Experimental Python support
+
+An experimental Python playground lives in `examples/python-playground`. It embeds Pyodide (CPython compiled to WebAssembly) in the web application and CI builds a dedicated Android APK for device testing. The first run downloads the Python runtime from jsDelivr and therefore requires internet access. Python code runs locally in the WebView; it is not uploaded to a server. This is a proof of concept, not yet a stable Dolphin language backend: offline runtime packaging and access to Dolphin native device APIs from Python remain future work.
 
 ## Device permissions and privacy
 
