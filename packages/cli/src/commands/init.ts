@@ -77,8 +77,8 @@ After creating your app:
       const gradle = path.join(target, "android/app/build.gradle.kts");
       const gradleText = await fs.readFile(gradle, "utf8");
       await fs.writeFile(gradle, gradleText
-        .replace(/namespace\\s*=\\s*"[^"]+"/, "namespace = \"" + packageId + "\"")
-        .replace(/applicationId\\s*=\\s*"[^"]+"/, "applicationId = \"" + packageId + "\""));
+        .replace(/namespace\s*=\s*"[^"]+"/, "namespace = \"" + packageId + "\"")
+        .replace(/applicationId\s*=\s*"[^"]+"/, "applicationId = \"" + packageId + "\""));
 
       const sourceRoot = path.join(target, "android/app/src/main/java");
       const oldDir = path.join(sourceRoot, "com", "dolphin", "app");
@@ -90,7 +90,7 @@ After creating your app:
         const source = await fs.readFile(oldPath, "utf8");
         await fs.writeFile(
           path.join(newDir, file),
-          source.replace(/^package\\s+com\\.dolphin\\.app\\s*$/m, "package " + packageId)
+          source.replace(/^package\s+com\.dolphin\.app\s*$/m, "package " + packageId)
         );
         await fs.rm(oldPath);
       }
