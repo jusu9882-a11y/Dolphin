@@ -18,7 +18,7 @@
     "prepack": "npm run build && node scripts/prepare-package.mjs"
   },
   "dependencies": {
-    "@dolphin/bridge": "^0.1.0",
+    "@dolphin/bridge": "workspace:*",
     "commander": "^13.1.0",
     "picocolors": "^1.1.1"
   },
