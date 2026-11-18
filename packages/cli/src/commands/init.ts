@@ -22,7 +22,14 @@ export const initCommand = new Command("init").description("Create a new Dolphin
     }
     if (!template) throw new Error("Default app template not found in this Dolphin installation.");
     await fs.mkdir(target, { recursive: true });
-    await fs.cp(template, target, { recursive: true, filter: p => !p.includes("node_modules") && !p.includes("/dist/") });
+    await fs.cp(template, target, {
+      recursive: true,
+      filter: p => {
+        const relativePath = path.relative(template!, p);
+        const segments = relativePath.split(path.sep);
+        return !segments.includes("node_modules") && !segments.includes("dist");
+      }
+    });
     const shell = await findShellTemplate();
     await fs.cp(shell, path.join(target, "android"), { recursive: true });
 
