@@ -1,0 +1,21 @@
+Dolphin
+Copyright 2026 Francis Jusu
+Developed by JTT (JUSU TECH TEAM)
+
+Dolphin is licensed under the Apache License, Version 2.0.
+A copy of the license is available in the LICENSE file and at:
+https://www.apache.org/licenses/LICENSE-2.0
+
+Project attribution:
+Dolphin is created and maintained by Francis Jusu, founder of JTT
+(JUSU TECH TEAM), a self-taught software engineer and open-source
+software developer.
+
+Other projects attributed to the developer include JUSU (a Python
+library for web applications), Earth Plus, and Hand Mouse.
+
+Third-party components:
+This project includes or depends on third-party software. Their respective
+copyright and license terms remain applicable. See the package manifests,
+lockfiles, and the relevant upstream projects for details. This NOTICE does
+not replace or override third-party license notices.
