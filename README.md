@@ -6,6 +6,19 @@ Dolphin is an Android-first app framework for building mobile applications with 
 
 **Early MVP — not production-ready.** The repository currently builds the TypeScript bridge, CLI, starter app, and Android shell in GitHub Actions. CLI scaffolding and custom Android package-ID updates are smoke-tested in CI. A successful CI build does not prove correct behavior on a physical device; emulator and physical-device validation are still outstanding.
 
+## Download and install
+
+Dolphin v0.1 is distributed as source code from this repository. Download the ZIP from the green **Code** button on GitHub, or clone it with Git:
+
+```sh
+git clone https://github.com/jusu9882-a11y/Dolphin.git
+cd Dolphin
+```
+
+See [Installation for Termux, Linux, macOS and Windows](docs/INSTALLATION.md) for prerequisites and commands to build and link the CLI locally. The CLI is not currently published to npm, so `npm install -g @dolphin/cli` is not an available installation method.
+
+**Termux note:** the source-based CLI and project scaffolding can be installed in Termux. Building Android APKs from Termux additionally requires a working Java, Android SDK/build-tools and Gradle setup; that complete Termux packaging workflow has not yet been validated. Dolphin is an early MVP, not production-ready.
+
 ## Architecture
 
 - `packages/cli`: Node.js/TypeScript command-line interface.
