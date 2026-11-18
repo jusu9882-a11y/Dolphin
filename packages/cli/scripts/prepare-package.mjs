@@ -12,8 +12,13 @@ function copyRequired(source, destination) {
   fs.cpSync(source, destination, { recursive: true });
 }
 
-copyRequired(path.join(repoRoot, "templates/default-app"), path.join(packageDir, "templates/default-app"));
+const appTemplate = path.join(packageDir, "templates/default-app");
+copyRequired(path.join(repoRoot, "templates/default-app"), appTemplate);
 copyRequired(path.join(repoRoot, "packages/android-shell/template"), path.join(packageDir, "templates/android-shell"));
+const appPackagePath = path.join(appTemplate, "package.json");
+const appPackage = JSON.parse(fs.readFileSync(appPackagePath, "utf8"));
+appPackage.dependencies["@dolphin/bridge"] = "^0.1.0";
+fs.writeFileSync(appPackagePath, JSON.stringify(appPackage, null, 2) + "\n");
 for (const name of ["LICENSE", "NOTICE"]) {
   copyRequired(path.join(repoRoot, name), path.join(packageDir, name));
 }
