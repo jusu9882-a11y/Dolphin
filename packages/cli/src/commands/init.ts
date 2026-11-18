@@ -14,7 +14,13 @@ export const initCommand = new Command("init").description("Create a new Dolphin
     catch (e) { if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e; }
     const packageId = options.packageId ?? "com.dolphin.app";
     if (!validPackageId(packageId)) throw new Error("Invalid package ID. Expected reverse-DNS form, e.g. com.example.app");
-    const template = path.resolve(here, "../../../../templates/default-app");
+    const templateCandidates = [path.resolve(here, "../../templates/default-app"), path.resolve(here, "../../../../templates/default-app")];
+    let template: string | undefined;
+    for (const candidate of templateCandidates) {
+      try { await fs.access(path.join(candidate, "package.json")); template = candidate; break; }
+      catch { /* try the next package layout */ }
+    }
+    if (!template) throw new Error("Default app template not found in this Dolphin installation.");
     await fs.mkdir(target, { recursive: true });
     await fs.cp(template, target, { recursive: true, filter: p => !p.includes("node_modules") && !p.includes("/dist/") });
     const shell = await findShellTemplate();
