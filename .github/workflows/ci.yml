@@ -114,3 +114,23 @@ jobs:
           path: /tmp/dolphin-device-test/DolphinVoiceRecorder/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+      - name: Build experimental Python playground
+        run: pnpm --filter dolphin-python-playground build
+      - name: Generate Dolphin Python Android app
+        run: |
+          mkdir -p /tmp/dolphin-python-device-test
+          cd /tmp/dolphin-python-device-test
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init DolphinPython --package-id com.dolphin.python
+          cd DolphinPython
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Dolphin Python"
+          rm -rf android/app/src/main/assets/www/*
+          cp -R "$GITHUB_WORKSPACE/examples/python-playground/dist/." android/app/src/main/assets/www/
+      - name: Build Python playground Android APK
+        run: gradle -p /tmp/dolphin-python-device-test/DolphinPython/android assembleDebug
+      - name: Upload Python playground APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: dolphin-python-playground-android
+          path: /tmp/dolphin-python-device-test/DolphinPython/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
