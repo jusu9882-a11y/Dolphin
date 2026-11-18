@@ -23,7 +23,6 @@ export const doctorCommand = new Command("doctor")
     check("Node.js", await commandAvailable("node"));
     check("npm", await commandAvailable("npm"));
     check("Android Debug Bridge", await commandAvailable("adb"), "needed for dolphin run/device");
-    check("Gradle", await commandAvailable("gradle"), "needed unless the project has a Gradle Wrapper");
     try {
       const config = await readConfig();
       check("Dolphin project", true, config.appName);
@@ -32,6 +31,7 @@ export const doctorCommand = new Command("doctor")
       const wrapper = path.join(android, process.platform === "win32" ? "gradlew.bat" : "gradlew");
       const hasWrapper = await fs.access(wrapper).then(() => true).catch(() => false);
       check("Gradle Wrapper", hasWrapper, hasWrapper ? "project-local Gradle" : "system Gradle fallback");
+      if (!hasWrapper) check("System Gradle", await commandAvailable("gradle"), "required when no Gradle Wrapper is present");
     } catch (error) {
       check("Dolphin project configuration", false, error instanceof Error ? error.message : String(error));
     }
