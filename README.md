@@ -20,12 +20,24 @@ Dolphin is an Android-first app framework for building mobile applications with 
 - Configure the display name, PNG icon input, and Android application ID.
 - Keep Android `namespace`, `applicationId`, and Kotlin package declarations aligned when setting a custom package ID.
 - Run a Vite development server and launch an authorized Android device through ADB reverse.
-- Build web assets and package an APK using the Gradle Wrapper when present, or a system Gradle installation as a fallback.
+- Build web assets and package a debug/release APK or a release Android App Bundle (AAB); use `dolphin build --all` to produce a debug APK and release AAB together.
+- Configure optional release signing through the environment variables `DOLPHIN_KEYSTORE_PATH`, `DOLPHIN_KEYSTORE_PASSWORD`, `DOLPHIN_KEY_ALIAS`, and `DOLPHIN_KEY_PASSWORD`. Never commit keystores or passwords. Without these variables, the release AAB is unsigned and is not ready for Google Play upload.
 - Communicate asynchronously between JavaScript and native Kotlin code.
 - Opt camera and microphone permissions into an app manifest only when explicitly enabled with `dolphin config capability camera enable` or `dolphin config capability microphone enable`.
 - Mediate WebView camera/microphone requests with trusted-origin checks, an in-app disclosure, and Android runtime permission checks.
 - Read one-shot accelerometer, gyroscope, magnetometer, light and proximity sensor samples through the typed JavaScript bridge when those sensors are present.
 - Perform bounded app-private file reads/writes on an I/O dispatcher, with canonical-path traversal protection.
+
+## Android build commands
+
+Run these commands from a generated Dolphin app directory:
+
+- `dolphin build` or `dolphin build --apk`: debug APK in `dist-android/`.
+- `dolphin build --release`: release APK in `dist-android/`.
+- `dolphin build --aab`: release AAB in `dist-android/`.
+- `dolphin build --all`: debug APK and release AAB in `dist-android/`.
+
+For a signed release, set all four signing environment variables before building. Keep the keystore and credentials outside source control. Android App Bundles are distribution artifacts; use a locally signed release bundle or your protected CI signing configuration before uploading to Google Play.
 
 ## Experimental Python support
 
@@ -47,7 +59,7 @@ GitHub Actions currently:
 3. Verifies sensitive device permissions are absent by default and can be enabled/disabled per app.
 4. Changes that package ID again and verifies the source package is moved consistently.
 5. Builds the React starter app.
-6. Builds the Android shell with Java 17, Android SDK 35, and Gradle 8.9.
+6. Builds the Android shell and verifies both APK and AAB Gradle tasks.
 
 ## Remaining release gates
 
