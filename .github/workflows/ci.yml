@@ -123,6 +123,7 @@ jobs:
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init DolphinPython --package-id com.dolphin.python
           cd DolphinPython
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Dolphin Python"
+          mkdir -p android/app/src/main/assets/www
           rm -rf android/app/src/main/assets/www/*
           cp -R "$GITHUB_WORKSPACE/examples/python-playground/dist/." android/app/src/main/assets/www/
       - name: Build Python playground Android APK
