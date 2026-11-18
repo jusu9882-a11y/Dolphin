@@ -2,6 +2,12 @@
 
 Dolphin is an Android-first app framework for building mobile applications with React, Vite, and TypeScript, hosted in a native Kotlin Android WebView. Native capabilities are exposed through a promise-based JavaScript bridge.
 
+## Project ownership and license
+
+Dolphin is developed by **Francis Jusu**, founder of **JTT (JUSU TECH TEAM)**. Francis is a self-taught software engineer and open-source developer whose other projects include JUSU (a Python library for web applications), Earth Plus, and Hand Mouse.
+
+Dolphin is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Contributions are governed by [CONTRIBUTING.md](CONTRIBUTING.md). Third-party dependencies remain subject to their own licenses.
+
 ## Project status
 
 **Early MVP — not production-ready.** The repository currently builds the TypeScript bridge, CLI, starter app, and Android shell in GitHub Actions. CLI scaffolding and custom Android package-ID updates are smoke-tested in CI. A successful CI build does not prove correct behavior on a physical device; emulator and physical-device validation are still outstanding.
