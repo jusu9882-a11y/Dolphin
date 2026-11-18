@@ -1,0 +1,19 @@
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: #0b1220; color: #e8eef8; font-family: Inter, system-ui, sans-serif; }
+.shell { width: min(760px, 100%); margin: 0 auto; padding: 32px 22px 48px; }
+.eyebrow { color: #78a9ff; font-size: 11px; font-weight: 800; letter-spacing: 2px; }
+h1 { margin: 12px 0 8px; font-size: clamp(34px, 8vw, 52px); letter-spacing: -2px; }
+h1 span { color: #71a5ff; }
+header p { color: #aab8cd; line-height: 1.6; margin: 0 0 24px; }
+.status { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; border: 1px solid #263650; background: #111d30; border-radius: 12px; padding: 13px; margin: 22px 0; font-size: 13px; }
+.status small { display: block; flex-basis: 100%; color: #93a4bd; padding-left: 18px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: #e3a64a; }
+.dot.ready { background: #51d6a0; }
+label { display: block; margin: 20px 0 9px; color: #9db0ca; font-size: 11px; font-weight: 800; letter-spacing: 1.5px; }
+textarea, pre { width: 100%; min-height: 230px; margin: 0; padding: 16px; border: 1px solid #2a3b56; border-radius: 12px; background: #101a2b; color: #e8eef8; font: 14px/1.65 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+textarea { resize: vertical; outline: none; }
+textarea:focus { border-color: #71a5ff; }
+button { width: 100%; margin: 14px 0 4px; padding: 15px; border: 0; border-radius: 11px; background: #397be8; color: white; font-size: 15px; font-weight: 750; }
+button:disabled { opacity: .55; }
+pre { min-height: 110px; color: #8ee4b8; }
+footer { margin-top: 22px; color: #8596ae; font-size: 12px; line-height: 1.6; }
