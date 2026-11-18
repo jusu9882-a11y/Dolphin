@@ -12,6 +12,29 @@ android {
         versionCode = 1
         versionName = "1.0.0"
     }
+    val releaseStoreFile = System.getenv("DOLPHIN_KEYSTORE_PATH")
+    val releaseStorePassword = System.getenv("DOLPHIN_KEYSTORE_PASSWORD")
+    val releaseKeyAlias = System.getenv("DOLPHIN_KEY_ALIAS")
+    val releaseKeyPassword = System.getenv("DOLPHIN_KEY_PASSWORD")
+    if (!releaseStoreFile.isNullOrBlank() && !releaseStorePassword.isNullOrBlank()
+        && !releaseKeyAlias.isNullOrBlank() && !releaseKeyPassword.isNullOrBlank()) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
+    buildTypes {
+        getByName("release") {
+            if (!releaseStoreFile.isNullOrBlank() && !releaseStorePassword.isNullOrBlank()
+                && !releaseKeyAlias.isNullOrBlank() && !releaseKeyPassword.isNullOrBlank()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
