@@ -1,4 +1,4 @@
-package com.dolphin.app
+package com.wittle.app
 
 import android.content.Context
 import android.os.BatteryManager
@@ -29,7 +29,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class WebAppInterface(private val context: Context, private val webView: WebView) {
-    private val appFiles = File(context.filesDir, "dolphin").apply { mkdirs() }
+    private val appFiles = File(context.filesDir, "wittle").apply { mkdirs() }
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val sensorStreams = mutableMapOf<String, SensorEventListener>()
@@ -182,7 +182,7 @@ class WebAppInterface(private val context: Context, private val webView: WebView
         val payload = JSONObject.quote(data.toString())
         webView.post {
             webView.evaluateJavascript(
-                "window.__dolphinSensorEvent && window.__dolphinSensorEvent($payload);",
+                "window.__wittleSensorEvent && window.__wittleSensorEvent($payload);",
                 null
             )
         }
@@ -242,6 +242,6 @@ class WebAppInterface(private val context: Context, private val webView: WebView
 
     private fun respond(json: JSONObject) {
         val payload = JSONObject.quote(json.toString())
-        webView.post { webView.evaluateJavascript("window.__dolphinResolve && window.__dolphinResolve($payload);", null) }
+        webView.post { webView.evaluateJavascript("window.__wittleResolve && window.__wittleResolve($payload);", null) }
     }
 }
