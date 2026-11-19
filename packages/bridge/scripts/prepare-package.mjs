@@ -9,4 +9,4 @@ for (const name of ["LICENSE", "NOTICE"]) {
   if (!fs.existsSync(source)) throw new Error("Required release asset is missing: " + source);
   fs.copyFileSync(source, path.join(packageDir, name));
 }
-console.log("Prepared Dolphin bridge npm package assets.");
+console.log("Prepared Wittle bridge npm package assets.");
