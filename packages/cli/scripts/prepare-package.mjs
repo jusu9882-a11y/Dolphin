@@ -25,11 +25,11 @@ copyRequired(path.join(repoRoot, "templates/default-app"), appTemplate, {
 copyRequired(path.join(repoRoot, "packages/android-shell/template"), path.join(packageDir, "templates/android-shell"));
 const appPackagePath = path.join(appTemplate, "package.json");
 const appPackage = JSON.parse(fs.readFileSync(appPackagePath, "utf8"));
-appPackage.dependencies["@dolphin/bridge"] = "^0.1.0";
+appPackage.dependencies["@wittle/bridge"] = "^0.1.0";
 fs.writeFileSync(appPackagePath, JSON.stringify(appPackage, null, 2) + "\n");
 for (const name of ["LICENSE", "NOTICE", "README.md"]) {
   const source = path.join(repoRoot, name);
   if (name === "README.md" && !fs.existsSync(source)) continue;
   copyRequired(source, path.join(packageDir, name));
 }
-console.log("Prepared Dolphin npm package assets.");
+console.log("Prepared Wittle npm package assets.");
