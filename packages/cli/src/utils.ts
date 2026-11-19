@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 
-export interface DolphinConfig {
+export interface WittleConfig {
   appName: string;
   packageId: string;
   version: string;
@@ -12,20 +12,20 @@ export interface DolphinConfig {
   devServerUrl?: string;
   capabilities?: Array<"camera" | "microphone">;
 }
-export const configFile = "dolphin.config.json";
+export const configFile = "wittle.config.json";
 
-export async function readConfig(cwd = process.cwd()): Promise<DolphinConfig> {
+export async function readConfig(cwd = process.cwd()): Promise<WittleConfig> {
   const file = path.join(cwd, configFile);
   let value: unknown;
   try { value = JSON.parse(await fs.readFile(file, "utf8")); }
   catch { throw new Error(`Cannot read ${configFile} in ${cwd}`); }
-  if (!value || typeof value !== "object") throw new Error("Invalid Dolphin config");
-  const c = value as Partial<DolphinConfig>;
+  if (!value || typeof value !== "object") throw new Error("Invalid Wittle config");
+  const c = value as Partial<WittleConfig>;
   for (const key of ["appName", "packageId", "version", "icon", "webDir"] as const)
     if (typeof c[key] !== "string" || !c[key]) throw new Error(`Invalid config field: ${key}`);
-  return c as DolphinConfig;
+  return c as WittleConfig;
 }
-export async function writeConfig(config: DolphinConfig, cwd = process.cwd()): Promise<void> {
+export async function writeConfig(config: WittleConfig, cwd = process.cwd()): Promise<void> {
   await fs.writeFile(path.join(cwd, configFile), `${JSON.stringify(config, null, 2)}\n`, "utf8");
 }
 export function runProcess(command: string, args: string[], cwd: string, inherit = true): Promise<void> {
@@ -50,7 +50,7 @@ export async function findShellTemplate(): Promise<string> {
     try { await fs.access(path.join(candidate, "app", "src", "main", "AndroidManifest.xml")); return candidate; }
     catch { /* try next */ }
   }
-  throw new Error("Android shell template not found. Install the complete Dolphin monorepo or bundled CLI package.");
+  throw new Error("Android shell template not found. Install the complete Wittle monorepo or bundled CLI package.");
 }
 export function validPackageId(value: string): boolean {
   return /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/.test(value);
