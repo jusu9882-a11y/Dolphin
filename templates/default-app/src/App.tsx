@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 type Recording = { id: string; name: string; createdAt: number; blob: Blob; mimeType: string };
-const DB_NAME = "dolphin-voice-recorder";
+const DB_NAME = "wittle-voice-recorder";
 const STORE = "recordings";
 
 function openDatabase(): Promise<IDBDatabase> {
@@ -160,7 +160,7 @@ export default function App() {
 
   return <main className="recorder">
     <header>
-      <div className="eyebrow">DOLPHIN · PRIVATE AUDIO</div>
+      <div className="eyebrow">WITTLE · PRIVATE AUDIO</div>
       <h1>Voice <span>Recorder</span></h1>
       <p className="intro">Capture a thought, a meeting, or a voice note. Your audio stays on this device.</p>
     </header>
