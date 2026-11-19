@@ -31,7 +31,7 @@ jobs:
           mkdir -p /tmp/wittle-smoke
           cd /tmp/wittle-smoke
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init SmokeApp --package-id com.example.smoke
-          test -f SmokeApp/dolphin.config.json
+          test -f SmokeApp/wittle.config.json
           test -f SmokeApp/android/app/src/main/AndroidManifest.xml
           grep -Fq 'namespace = "com.example.smoke"' SmokeApp/android/app/build.gradle.kts
           grep -Fq 'applicationId = "com.example.smoke"' SmokeApp/android/app/build.gradle.kts
