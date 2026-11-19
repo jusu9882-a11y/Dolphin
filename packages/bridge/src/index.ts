@@ -1,6 +1,6 @@
 /**
- * Dolphin browser-to-native RPC client.
- * The Android host exposes window.DolphinNative.postMessage(json).
+ * Wittle browser-to-native RPC client.
+ * The Android host exposes window.WittleNative.postMessage(json).
  */
 export interface DeviceInfo {
   model: string;
@@ -23,9 +23,9 @@ type RpcResult<T> =
 
 declare global {
   interface Window {
-    DolphinNative?: { postMessage(payload: string): void };
-    __dolphinResolve?: (payload: string) => void;
-    __dolphinSensorEvent?: (payload: string) => void;
+    WittleNative?: { postMessage(payload: string): void };
+    __wittleResolve?: (payload: string) => void;
+    __wittleSensorEvent?: (payload: string) => void;
   }
 }
 
@@ -49,10 +49,10 @@ function receive(payload: string): void {
   else request.resolve(response.result);
 }
 
-if (typeof window !== "undefined") window.__dolphinResolve = receive;
+if (typeof window !== "undefined") window.__wittleResolve = receive;
 const sensorListeners = new Map<string, (reading: SensorReading) => void>();
 if (typeof window !== "undefined") {
-  window.__dolphinSensorEvent = (payload: string): void => {
+  window.__wittleSensorEvent = (payload: string): void => {
     try {
       const event = JSON.parse(payload) as { streamId: string; reading: SensorReading };
       sensorListeners.get(event.streamId)?.(event.reading);
@@ -61,17 +61,17 @@ if (typeof window !== "undefined") {
 }
 
 function rpc<T>(method: string, params: Record<string, unknown> = {}): Promise<T> {
-  if (typeof window === "undefined" || !window.DolphinNative) {
-    return Promise.reject(new Error("Dolphin native runtime is unavailable"));
+  if (typeof window === "undefined" || !window.WittleNative) {
+    return Promise.reject(new Error("Wittle native runtime is unavailable"));
   }
-  const id = `dolphin-${Date.now()}-${++sequence}`;
+  const id = `wittle-${Date.now()}-${++sequence}`;
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
       pending.delete(id);
-      reject(new Error(`Dolphin RPC timed out: ${method}`));
+      reject(new Error(`Wittle RPC timed out: ${method}`));
     }, DEFAULT_TIMEOUT_MS);
     pending.set(id, { resolve: resolve as (value: unknown) => void, reject, timer });
-    try { window.DolphinNative!.postMessage(JSON.stringify({ id, method, params })); }
+    try { window.WittleNative!.postMessage(JSON.stringify({ id, method, params })); }
     catch (error) {
       clearTimeout(timer);
       pending.delete(id);
@@ -80,9 +80,9 @@ function rpc<T>(method: string, params: Record<string, unknown> = {}): Promise<T
   });
 }
 
-export const Dolphin = {
+export const Wittle = {
   isNative: (): boolean =>
-    typeof window !== "undefined" && typeof window.DolphinNative?.postMessage === "function",
+    typeof window !== "undefined" && typeof window.WittleNative?.postMessage === "function",
   device: {
     vibrate(durationMs = 100): Promise<void> {
       if (!Number.isFinite(durationMs) || durationMs < 0 || durationMs > 10_000)
@@ -127,4 +127,4 @@ export const Dolphin = {
     writeFile(path: string, data: string): Promise<void> { return rpc<void>("fs.writeFile", { path, data }); }
   }
 };
-export default Dolphin;
+export default Wittle;
