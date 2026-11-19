@@ -8,22 +8,22 @@ import { findShellTemplate, writeConfig, validPackageId } from "../utils.js";
 const here = path.dirname(fileURLToPath(import.meta.url));
 
 export const initCommand = new Command("init")
-  .description("Create a new Dolphin application")
+  .description("Create a new Wittle application")
   .argument("<app-name>", "Name of the application to create")
   .option("--package-id <id>", "Android application ID")
   .addHelpText("after", `
 Examples:
-  dolphin init MyApp
-  dolphin init MyApp --package-id com.example.myapp
+  wittle init MyApp
+  wittle init MyApp --package-id com.example.myapp
 
 After creating your app:
   cd MyApp
   npm install
   # Edit src/App.tsx to build your app
   npm run dev             Preview in your browser
-  dolphin run             Run on a connected Android device
-  dolphin build --apk     Build an Android APK
-  dolphin build --aab     Build an Android App Bundle
+  wittle run             Run on a connected Android device
+  wittle build --apk     Build an Android APK
+  wittle build --aab     Build an Android App Bundle
 `)
   .action(async (appName: string, options: { packageId?: string }) => {
     const target = path.resolve(process.cwd(), appName);
@@ -35,7 +35,7 @@ After creating your app:
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
 
-    const packageId = options.packageId ?? "com.dolphin.app";
+    const packageId = options.packageId ?? "com.wittle.app";
     if (!validPackageId(packageId)) {
       throw new Error("Invalid package ID. Expected reverse-DNS form, e.g. com.example.app");
     }
@@ -57,7 +57,7 @@ After creating your app:
     }
 
     if (!template) {
-      throw new Error("Default app template not found in this Dolphin installation.");
+      throw new Error("Default app template not found in this Wittle installation.");
     }
 
     await fs.mkdir(target, { recursive: true });
@@ -108,7 +108,7 @@ After creating your app:
     }, target);
 
     console.log("");
-    console.log(pc.green(pc.bold("🐬 Your Dolphin app is ready!")));
+    console.log(pc.green(pc.bold("🦦 Your Wittle app is ready!")));
     console.log("");
     console.log(pc.bold("Created: ") + pc.cyan(appName));
     console.log("");
@@ -127,15 +127,15 @@ After creating your app:
     console.log(pc.dim("     npm run dev"));
     console.log("");
     console.log(pc.cyan("  5.") + " Run on an Android device");
-    console.log(pc.dim("     dolphin run"));
+    console.log(pc.dim("     wittle run"));
     console.log("");
     console.log(pc.cyan("  6.") + " Build Android packages");
-    console.log(pc.dim("     dolphin build --apk"));
-    console.log(pc.dim("     dolphin build --aab"));
+    console.log(pc.dim("     wittle build --apk"));
+    console.log(pc.dim("     wittle build --aab"));
     console.log("");
     console.log(pc.dim("Note: Android device runs and local package builds still require"));
-    console.log(pc.dim("Android platform tools on this version. Dolphin-managed cloud"));
+    console.log(pc.dim("Android platform tools on this version. Wittle-managed cloud"));
     console.log(pc.dim("builds are planned and are not available yet."));
     console.log("");
-    console.log(pc.dim("Run `dolphin --help` to explore all commands."));
+    console.log(pc.dim("Run `wittle --help` to explore all commands."));
   });
