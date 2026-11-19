@@ -1,4 +1,4 @@
-package com.wittle.app
+package com.dolphin.app
 
 import android.content.Context
 import android.os.BatteryManager
