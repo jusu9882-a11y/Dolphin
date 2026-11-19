@@ -28,8 +28,8 @@ jobs:
         run: pnpm --filter @wittle/cli build
       - name: Smoke-test CLI scaffolding and package configuration
         run: |
-          mkdir -p /tmp/dolphin-smoke
-          cd /tmp/dolphin-smoke
+          mkdir -p /tmp/wittle-smoke
+          cd /tmp/wittle-smoke
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init SmokeApp --package-id com.example.smoke
           test -f SmokeApp/dolphin.config.json
           test -f SmokeApp/android/app/src/main/AndroidManifest.xml
@@ -93,7 +93,7 @@ jobs:
         run: |
           mkdir -p /tmp/wittle-device-test
           cd /tmp/wittle-device-test
-          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init WittleVoiceRecorder --package-id com.dolphin.voicerecorder
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init WittleVoiceRecorder --package-id com.wittle.voicerecorder
           cd WittleVoiceRecorder
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Wittle Voice Recorder"
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability microphone enable
@@ -121,7 +121,7 @@ jobs:
       - name: Upload release Android App Bundle
         uses: actions/upload-artifact@v4
         with:
-          name: dolphin-voice-recorder-aab
+          name: wittle-voice-recorder-aab
           path: /tmp/wittle-device-test/WittleVoiceRecorder/android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
           retention-days: 14
@@ -131,7 +131,7 @@ jobs:
         run: |
           mkdir -p /tmp/wittle-python-device-test
           cd /tmp/wittle-python-device-test
-          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init WittlePython --package-id com.dolphin.python
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init WittlePython --package-id com.wittle.python
           cd WittlePython
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Wittle Python"
           mkdir -p android/app/src/main/assets/www
