@@ -3,19 +3,19 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 android {
-    namespace = "com.dolphin.app"
+    namespace = "com.wittle.app"
     compileSdk = 35
     defaultConfig {
-        applicationId = "com.dolphin.app"
+        applicationId = "com.wittle.app"
         minSdk = 23
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
     }
-    val releaseStoreFile = System.getenv("DOLPHIN_KEYSTORE_PATH")
-    val releaseStorePassword = System.getenv("DOLPHIN_KEYSTORE_PASSWORD")
-    val releaseKeyAlias = System.getenv("DOLPHIN_KEY_ALIAS")
-    val releaseKeyPassword = System.getenv("DOLPHIN_KEY_PASSWORD")
+    val releaseStoreFile = System.getenv("WITTLE_KEYSTORE_PATH")
+    val releaseStorePassword = System.getenv("WITTLE_KEYSTORE_PASSWORD")
+    val releaseKeyAlias = System.getenv("WITTLE_KEY_ALIAS")
+    val releaseKeyPassword = System.getenv("WITTLE_KEY_PASSWORD")
     if (!releaseStoreFile.isNullOrBlank() && !releaseStorePassword.isNullOrBlank()
         && !releaseKeyAlias.isNullOrBlank() && !releaseKeyPassword.isNullOrBlank()) {
         signingConfigs {
