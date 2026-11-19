@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 
 const sent = [];
 globalThis.window = {
-  DolphinNative: {
+  WittleNative: {
     postMessage(payload) {
       const request = JSON.parse(payload);
       sent.push(request);
@@ -15,14 +15,14 @@ globalThis.window = {
     }
   }
 };
-const { Dolphin } = await import("../dist/index.js");
+const { default: Wittle } = await import("../dist/index.js");
 
 function respond(request, result) {
-  window.__dolphinResolve(JSON.stringify({ id: request.id, result }));
+  window.__wittleResolve(JSON.stringify({ id: request.id, result }));
 }
 
 test("getSensorData resolves a native sensor reading", async () => {
-  const promise = Dolphin.device.getSensorData("accelerometer");
+  const promise = Wittle.device.getSensorData("accelerometer");
   const request = sent.at(-1);
   assert.equal(request.method, "device.getSensorData");
   assert.equal(request.params.sensor, "accelerometer");
@@ -36,7 +36,7 @@ test("getSensorData resolves a native sensor reading", async () => {
 
 test("watchSensor receives events and its stop callback closes the stream", async () => {
   const received = [];
-  const started = Dolphin.device.watchSensor("gyroscope", value => received.push(value), "ui");
+  const started = Wittle.device.watchSensor("gyroscope", value => received.push(value), "ui");
   const startRequest = sent.at(-1);
   assert.equal(startRequest.method, "device.startSensorStream");
   assert.equal(startRequest.params.sensor, "gyroscope");
@@ -46,7 +46,7 @@ test("watchSensor receives events and its stop callback closes the stream", asyn
     sensor: "Gyroscope", type: "android.sensor.gyroscope",
     values: [1, 2, 3], accuracy: 3, timestampNanos: 456
   };
-  window.__dolphinSensorEvent(JSON.stringify({
+  window.__wittleSensorEvent(JSON.stringify({
     streamId: startRequest.params.streamId, reading
   }));
   assert.deepEqual(received, [reading]);
@@ -61,7 +61,7 @@ test("watchSensor receives events and its stop callback closes the stream", asyn
 
 test("watchSensor rejects unsupported sensor names", async () => {
   await assert.rejects(
-    Dolphin.device.watchSensor("camera", () => {}),
+    Wittle.device.watchSensor("camera", () => {}),
     RangeError
   );
 });

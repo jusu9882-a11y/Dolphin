@@ -1,12 +1,12 @@
-# Dolphin
+# Wittle
 
-Dolphin is an Android-first app framework for building mobile applications with React, Vite, and TypeScript, hosted in a native Kotlin Android WebView. Native capabilities are exposed through a promise-based JavaScript bridge.
+Wittle is an Android-first app framework for building mobile applications with React, Vite, and TypeScript, hosted in a native Kotlin Android WebView. Native capabilities are exposed through a promise-based JavaScript bridge.
 
 ## Project ownership and license
 
-Dolphin is developed by **Francis Jusu**, founder of **JTT (JUSU TECH TEAM)**. Francis is a self-taught software engineer and open-source developer whose other projects include JUSU (a Python library for web applications), Earth Plus, and Hand Mouse.
+Wittle is developed by **Francis Jusu**, founder of **JTT (JUSU TECH TEAM)**. Francis is a self-taught software engineer and open-source developer whose other projects include JUSU (a Python library for web applications), Earth Plus, and Hand Mouse.
 
-Dolphin is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Contributions are governed by [CONTRIBUTING.md](CONTRIBUTING.md). Third-party dependencies remain subject to their own licenses.
+Wittle is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Contributions are governed by [CONTRIBUTING.md](CONTRIBUTING.md). Third-party dependencies remain subject to their own licenses.
 
 ## Project status
 
@@ -14,16 +14,16 @@ Dolphin is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) and
 
 ## Download and install
 
-Dolphin v0.1 is distributed as source code from this repository. Download the ZIP from the green **Code** button on GitHub, or clone it with Git:
+Wittle v0.1 is distributed as source code from this repository. Download the ZIP from the green **Code** button on GitHub, or clone it with Git:
 
 ```sh
-git clone https://github.com/jusu9882-a11y/Dolphin.git
-cd Dolphin
+git clone https://github.com/jusu9882-a11y/Wittle.git
+cd Wittle
 ```
 
-See [Installation for Termux, Linux, macOS and Windows](docs/INSTALLATION.md) for prerequisites and commands to build and link the CLI locally. The CLI is not currently published to npm, so `npm install -g @dolphin/cli` is not an available installation method.
+See [Installation for Termux, Linux, macOS and Windows](docs/INSTALLATION.md) for prerequisites and commands to build and link the CLI locally. The CLI is not currently published to npm, so `npm install -g @wittle/cli` is not an available installation method.
 
-**Termux note:** the source-based CLI and project scaffolding can be installed in Termux. Building Android APKs from Termux additionally requires a working Java, Android SDK/build-tools and Gradle setup; that complete Termux packaging workflow has not yet been validated. Dolphin is an early MVP, not production-ready.
+**Termux note:** the source-based CLI and project scaffolding can be installed in Termux. Building Android APKs from Termux additionally requires a working Java, Android SDK/build-tools and Gradle setup; that complete Termux packaging workflow has not yet been validated. Wittle is an early MVP, not production-ready.
 
 ## Architecture
 
@@ -31,7 +31,7 @@ See [Installation for Termux, Linux, macOS and Windows](docs/INSTALLATION.md) fo
 - `packages/bridge`: TypeScript promise-based native bridge SDK.
 - `packages/android-shell/template`: Kotlin Android WebView host.
 - `templates/default-app`: React + Vite + TypeScript starter.
-- `examples/python-playground`: experimental Python 3 execution inside the Dolphin WebView using Pyodide/WebAssembly.
+- `examples/python-playground`: experimental Python 3 execution inside the Wittle WebView using Pyodide/WebAssembly.
 
 ## Current capabilities
 
@@ -39,49 +39,49 @@ See [Installation for Termux, Linux, macOS and Windows](docs/INSTALLATION.md) fo
 - Configure the display name, PNG icon input, and Android application ID.
 - Keep Android `namespace`, `applicationId`, and Kotlin package declarations aligned when setting a custom package ID.
 - Run a Vite development server and launch an authorized Android device through ADB reverse.
-- Build web assets and package a debug/release APK or a release Android App Bundle (AAB); use `dolphin build --all` to produce a debug APK and release AAB together.
-- Configure optional release signing through the environment variables `DOLPHIN_KEYSTORE_PATH`, `DOLPHIN_KEYSTORE_PASSWORD`, `DOLPHIN_KEY_ALIAS`, and `DOLPHIN_KEY_PASSWORD`. Never commit keystores or passwords. Without these variables, the release AAB is unsigned and is not ready for Google Play upload.
+- Build web assets and package a debug/release APK or a release Android App Bundle (AAB); use `wittle build --all` to produce a debug APK and release AAB together.
+- Configure optional release signing through the environment variables `WITTLE_KEYSTORE_PATH`, `WITTLE_KEYSTORE_PASSWORD`, `WITTLE_KEY_ALIAS`, and `WITTLE_KEY_PASSWORD`. Never commit keystores or passwords. Without these variables, the release AAB is unsigned and is not ready for Google Play upload.
 - Communicate asynchronously between JavaScript and native Kotlin code.
-- Opt camera and microphone permissions into an app manifest only when explicitly enabled with `dolphin config capability camera enable` or `dolphin config capability microphone enable`.
+- Opt camera and microphone permissions into an app manifest only when explicitly enabled with `wittle config capability camera enable` or `wittle config capability microphone enable`.
 - Mediate WebView camera/microphone requests with trusted-origin checks, an in-app disclosure, and Android runtime permission checks.
 - Read one-shot accelerometer, gyroscope, magnetometer, light and proximity sensor samples through the typed JavaScript bridge when those sensors are present.
 - Perform bounded app-private file reads/writes on an I/O dispatcher, with canonical-path traversal protection.
 
 ## Android build commands
 
-Run these commands from a generated Dolphin app directory:
+Run these commands from a generated Wittle app directory:
 
-- `dolphin build` or `dolphin build --apk`: debug APK in `dist-android/`.
-- `dolphin build --release`: release APK in `dist-android/`.
-- `dolphin build --aab`: release AAB in `dist-android/`.
-- `dolphin build --all`: debug APK and release AAB in `dist-android/`.
+- `wittle build` or `wittle build --apk`: debug APK in `dist-android/`.
+- `wittle build --release`: release APK in `dist-android/`.
+- `wittle build --aab`: release AAB in `dist-android/`.
+- `wittle build --all`: debug APK and release AAB in `dist-android/`.
 
 For a signed release, set all four signing environment variables before building. Keep the keystore and credentials outside source control. Android App Bundles are distribution artifacts; use a locally signed release bundle or your protected CI signing configuration before uploading to Google Play.
 
 ## CLI commands
 
-Run these commands from a generated Dolphin app unless noted otherwise:
+Run these commands from a generated Wittle app unless noted otherwise:
 
-- `dolphin --help` / `dolphin --version`: show CLI help and version.
-- `dolphin init <app-name> [--package-id <id>]`: create an app.
-- `dolphin config name <name>`, `config icon <png>`, `config package-id <id>`, and `config capability <camera|microphone> <enable|disable>`: configure the app.
-- `dolphin run [--host <host>] [--port <port>]`: start Vite and launch an authorized Android device.
-- `dolphin build [--apk|--release|--aab|--all]`: package Android outputs.
-- `dolphin doctor`: check Node.js, npm, ADB, project configuration and the available Gradle installation/Wrapper.
-- `dolphin test`: run the configured npm test script; if absent, use typecheck, then build as a validation fallback. Use `dolphin test --typecheck` to require the typecheck script.
-- `dolphin device list`: list Android devices visible to ADB.
-- `dolphin device install [apk-path] [--replace]`: install an APK; without a path, use the newest APK in `dist-android/`. `--replace` preserves app data when Android permits it.
-- `dolphin clean`: remove generated web and packaged output folders. `dolphin clean --all` also removes Android Gradle build outputs; it does not remove source files or dependencies.
+- `wittle --help` / `wittle --version`: show CLI help and version.
+- `wittle init <app-name> [--package-id <id>]`: create an app.
+- `wittle config name <name>`, `config icon <png>`, `config package-id <id>`, and `config capability <camera|microphone> <enable|disable>`: configure the app.
+- `wittle run [--host <host>] [--port <port>]`: start Vite and launch an authorized Android device.
+- `wittle build [--apk|--release|--aab|--all]`: package Android outputs.
+- `wittle doctor`: check Node.js, npm, ADB, project configuration and the available Gradle installation/Wrapper.
+- `wittle test`: run the configured npm test script; if absent, use typecheck, then build as a validation fallback. Use `wittle test --typecheck` to require the typecheck script.
+- `wittle device list`: list Android devices visible to ADB.
+- `wittle device install [apk-path] [--replace]`: install an APK; without a path, use the newest APK in `dist-android/`. `--replace` preserves app data when Android permits it.
+- `wittle clean`: remove generated web and packaged output folders. `wittle clean --all` also removes Android Gradle build outputs; it does not remove source files or dependencies.
 
-Deployment providers, a plugin registry/installer, and a secure CLI self-update channel are not implemented yet. Their commands will be added when those services and their security/update policies exist; Dolphin will not expose placeholder commands that imply those operations work.
+Deployment providers, a plugin registry/installer, and a secure CLI self-update channel are not implemented yet. Their commands will be added when those services and their security/update policies exist; Wittle will not expose placeholder commands that imply those operations work.
 
 ## Experimental Python support
 
-An experimental Python playground lives in `examples/python-playground`. It embeds Pyodide (CPython compiled to WebAssembly) in the web application and CI builds a dedicated Android APK for device testing. The first run downloads the Python runtime from jsDelivr and therefore requires internet access. Python code runs locally in the WebView; it is not uploaded to a server. This is a proof of concept, not yet a stable Dolphin language backend: offline runtime packaging and access to Dolphin native device APIs from Python remain future work.
+An experimental Python playground lives in `examples/python-playground`. It embeds Pyodide (CPython compiled to WebAssembly) in the web application and CI builds a dedicated Android APK for device testing. The first run downloads the Python runtime from jsDelivr and therefore requires internet access. Python code runs locally in the WebView; it is not uploaded to a server. This is a proof of concept, not yet a stable Wittle language backend: offline runtime packaging and access to Wittle native device APIs from Python remain future work.
 
 ## Device permissions and privacy
 
-See [Device Permissions and Privacy Standard](docs/DEVICE_PERMISSIONS.md) for Dolphin's least-privilege permission rules, WebView camera/microphone boundary, and store-release requirements.
+See [Device Permissions and Privacy Standard](docs/DEVICE_PERMISSIONS.md) for Wittle's least-privilege permission rules, WebView camera/microphone boundary, and store-release requirements.
 
 ## Security baseline
 

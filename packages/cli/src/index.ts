@@ -11,8 +11,8 @@ import { cleanCommand } from "./commands/clean.js";
 import { deviceCommand } from "./commands/device.js";
 
 const program = new Command();
-program.name("dolphin")
-  .description("Build Android applications with React, Vite and the Dolphin native runtime")
+program.name("wittle")
+  .description("Build Android applications with React, Vite and the Wittle native runtime")
   .version("0.1.0");
 program.addCommand(initCommand);
 program.addCommand(configCommand);
@@ -24,6 +24,6 @@ program.addCommand(cleanCommand);
 program.addCommand(deviceCommand);
 program.parseAsync(process.argv).catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(pc.red(`Dolphin: ${message}`));
+  console.error(pc.red(`Wittle: ${message}`));
   process.exitCode = 1;
 });

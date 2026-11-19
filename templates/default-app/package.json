@@ -1,5 +1,5 @@
 {
-  "name": "dolphin-app",
+  "name": "wittle-app",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dolphin/bridge": "workspace:*",
+    "@wittle/bridge": "file:./dolphin-bridge",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

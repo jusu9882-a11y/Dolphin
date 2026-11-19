@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { loadPyodide, type PyodideInterface } from "pyodide";
-import { Dolphin } from "../../../packages/bridge/src/index";
+import { Wittle } from "../../../packages/bridge/src/index";
 
 const STARTER = `import json
 import dolphin
@@ -28,22 +28,22 @@ function getPython(): Promise<PyodideInterface> {
       // Expose a deliberately small, documented Python facade over the
       // existing trusted Dolphin SDK. Native permission checks remain native.
       pyodide.registerJsModule("dolphin", {
-        is_native: () => Dolphin.isNative(),
-        get_info: async () => JSON.stringify(await Dolphin.device.getInfo()),
+        is_native: () => Wittle.isNative(),
+        get_info: async () => JSON.stringify(await Wittle.device.getInfo()),
         get_sensor_data: async (sensor: string) => {
           if (!["accelerometer", "gyroscope", "magnetometer", "light", "proximity"].includes(sensor)) {
             throw new RangeError("Unsupported sensor");
           }
-          return JSON.stringify(await Dolphin.device.getSensorData(
+          return JSON.stringify(await Wittle.device.getSensorData(
             sensor as "accelerometer" | "gyroscope" | "magnetometer" | "light" | "proximity"
           ));
         },
         vibrate: async (durationMs = 100) => {
-          await Dolphin.device.vibrate(Number(durationMs));
+          await Wittle.device.vibrate(Number(durationMs));
           return true;
         },
         show_toast: async (message: string) => {
-          await Dolphin.ui.showToast(String(message));
+          await Wittle.ui.showToast(String(message));
           return true;
         }
       });

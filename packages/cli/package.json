@@ -1,9 +1,9 @@
 {
-  "name": "@dolphin/cli",
+  "name": "@wittle/cli",
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "dolphin": "./dist/index.js"
+    "wittle": "./dist/index.js"
   },
   "files": [
     "dist",
@@ -18,7 +18,7 @@
     "prepack": "npm run build && node scripts/prepare-package.mjs"
   },
   "dependencies": {
-    "@dolphin/bridge": "workspace:*",
+    "@wittle/bridge": "workspace:*",
     "commander": "^13.1.0",
     "picocolors": "^1.1.1"
   },

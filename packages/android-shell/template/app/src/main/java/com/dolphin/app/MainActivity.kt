@@ -31,7 +31,7 @@ class MainActivity : Activity() {
         webView = WebView(this)
         setContentView(webView)
 
-        val devUrl = intent.getStringExtra("dolphinDevUrl")
+        val devUrl = intent.getStringExtra("wittleDevUrl")
         devOrigin = devUrl?.takeIf { BuildConfig.DEBUG && isAllowedDevUrl(it) }?.let {
             Uri.parse(it).let { uri -> "${uri.scheme}://${uri.host}:${uri.port}" }
         }
@@ -66,7 +66,7 @@ class MainActivity : Activity() {
         bridge = WebAppInterface(this, webView)
         val allowedOrigins = mutableSetOf("https://appassets.androidplatform.net")
         if (BuildConfig.DEBUG && devOrigin != null) allowedOrigins.add(devOrigin!!)
-        WebViewCompat.addWebMessageListener(webView, "DolphinNative", allowedOrigins) { _, message, sourceOrigin, isMainFrame, _ ->
+        WebViewCompat.addWebMessageListener(webView, "WittleNative", allowedOrigins) { _, message, sourceOrigin, isMainFrame, _ ->
             if (!isMainFrame || !isTrustedOrigin(sourceOrigin)) return@addWebMessageListener
             val payload = message.data ?: return@addWebMessageListener
             bridge.handleMessage(payload)
