@@ -21,11 +21,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
       - name: Build bridge
-        run: pnpm --filter @dolphin/bridge build
+        run: pnpm --filter @wittle/bridge build
       - name: Test bridge sensor API
-        run: pnpm --filter @dolphin/bridge test
+        run: pnpm --filter @wittle/bridge test
       - name: Build CLI
-        run: pnpm --filter @dolphin/cli build
+        run: pnpm --filter @wittle/cli build
       - name: Smoke-test CLI scaffolding and package configuration
         run: |
           mkdir -p /tmp/dolphin-smoke
@@ -63,7 +63,7 @@ jobs:
           test -f android/app/src/main/java/com/example/finalized/MainActivity.kt
           grep -Fq 'package com.example.finalized' android/app/src/main/java/com/example/finalized/MainActivity.kt
       - name: Build starter app
-        run: pnpm --filter dolphin-app build
+        run: pnpm --filter wittle-app build
 
   android-shell:
     runs-on: ubuntu-latest
@@ -87,62 +87,62 @@ jobs:
           gradle-version: "8.9"
       - name: Install workspace dependencies
         run: pnpm install --no-frozen-lockfile
-      - name: Build Dolphin CLI
-        run: pnpm --filter @dolphin/cli build
+      - name: Build Wittle CLI
+        run: pnpm --filter @wittle/cli build
       - name: Generate voice-recorder app
         run: |
-          mkdir -p /tmp/dolphin-device-test
-          cd /tmp/dolphin-device-test
-          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init DolphinVoiceRecorder --package-id com.dolphin.voicerecorder
-          cd DolphinVoiceRecorder
-          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Dolphin Voice Recorder"
+          mkdir -p /tmp/wittle-device-test
+          cd /tmp/wittle-device-test
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init WittleVoiceRecorder --package-id com.dolphin.voicerecorder
+          cd WittleVoiceRecorder
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Wittle Voice Recorder"
           node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config capability microphone enable
           cd ..
       - name: Build app web assets
         run: |
-          cd /tmp/dolphin-device-test/DolphinVoiceRecorder
+          cd /tmp/wittle-device-test/WittleVoiceRecorder
           pnpm install
           pnpm run build
           mkdir -p android/app/src/main/assets/www
           cp -R dist/. android/app/src/main/assets/www/
       - name: Build installable Android APK
-        run: gradle -p /tmp/dolphin-device-test/DolphinVoiceRecorder/android assembleDebug
+        run: gradle -p /tmp/wittle-device-test/WittleVoiceRecorder/android assembleDebug
       - name: Upload voice-recorder APK
         uses: actions/upload-artifact@v4
         with:
-          name: dolphin-voice-recorder-android
-          path: /tmp/dolphin-device-test/DolphinVoiceRecorder/android/app/build/outputs/apk/debug/*.apk
+          name: wittle-voice-recorder-android
+          path: /tmp/wittle-device-test/WittleVoiceRecorder/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
       - name: Build release Android App Bundle
-        run: gradle -p /tmp/dolphin-device-test/DolphinVoiceRecorder/android bundleRelease
+        run: gradle -p /tmp/wittle-device-test/WittleVoiceRecorder/android bundleRelease
       - name: Verify release Android App Bundle
-        run: test -s /tmp/dolphin-device-test/DolphinVoiceRecorder/android/app/build/outputs/bundle/release/app-release.aab
+        run: test -s /tmp/wittle-device-test/WittleVoiceRecorder/android/app/build/outputs/bundle/release/app-release.aab
       - name: Upload release Android App Bundle
         uses: actions/upload-artifact@v4
         with:
           name: dolphin-voice-recorder-aab
-          path: /tmp/dolphin-device-test/DolphinVoiceRecorder/android/app/build/outputs/bundle/release/*.aab
+          path: /tmp/wittle-device-test/WittleVoiceRecorder/android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
           retention-days: 14
       - name: Build experimental Python playground
         run: pnpm --filter dolphin-python-playground build
-      - name: Generate Dolphin Python Android app
+      - name: Generate Wittle Python Android app
         run: |
-          mkdir -p /tmp/dolphin-python-device-test
-          cd /tmp/dolphin-python-device-test
-          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init DolphinPython --package-id com.dolphin.python
-          cd DolphinPython
-          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Dolphin Python"
+          mkdir -p /tmp/wittle-python-device-test
+          cd /tmp/wittle-python-device-test
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" init WittlePython --package-id com.dolphin.python
+          cd WittlePython
+          node "$GITHUB_WORKSPACE/packages/cli/dist/index.js" config name "Wittle Python"
           mkdir -p android/app/src/main/assets/www
           rm -rf android/app/src/main/assets/www/*
           cp -R "$GITHUB_WORKSPACE/examples/python-playground/dist/." android/app/src/main/assets/www/
       - name: Build Python playground Android APK
-        run: gradle -p /tmp/dolphin-python-device-test/DolphinPython/android assembleDebug
+        run: gradle -p /tmp/wittle-python-device-test/WittlePython/android assembleDebug
       - name: Upload Python playground APK
         uses: actions/upload-artifact@v4
         with:
-          name: dolphin-python-playground-android
-          path: /tmp/dolphin-python-device-test/DolphinPython/android/app/build/outputs/apk/debug/*.apk
+          name: wittle-python-playground-android
+          path: /tmp/wittle-python-device-test/WittlePython/android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
